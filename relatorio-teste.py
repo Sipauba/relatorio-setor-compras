@@ -1,12 +1,12 @@
 import cx_Oracle
 import pandas as pd
 import openpyxl
-from openpyxl.styles import PatternFill
+from openpyxl.styles import PatternFill, Alignment
 
-host = 'x'
-servico = 'x'
-usuario = 'x'
-senha = 'x'
+host = 'X'
+servico = 'X'
+usuario = 'X'
+senha = 'X'
 
 # Encontra o arquivo que aponta para o banco de dados
 cx_Oracle.init_oracle_client(lib_dir="./instantclient_21_10")
@@ -149,9 +149,34 @@ for row in range(2, ws.max_row + 1):
     # Tenta converter o valor para float, se não for possível, mantém o valor original
     try:
         cell.value = float(cell_value)
+        # Defina o formato numérico
+        cell.number_format = '0.00'
     except ValueError:
         pass  # Mantém o valor original se não for um número
+
+# Formatar a coluna "dtemissão" no arquivo Excel para mostrar apenas a data
+for row in range(2, ws.max_row + 1):
+    cell = ws.cell(row=row, column=4)  # Coluna 4 corresponde à "dtemissão"
+    cell.number_format = 'DD/MM/YYYY'
+
+# Centralize todas as células na planilha
+for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=1, max_col=ws.max_column):
+    for cell in row:
+        cell.alignment = Alignment(horizontal='center', vertical='center')
     
+# Ajustar o tamanho das colunas automaticamente com base no conteúdo
+for column in ws.columns:
+    max_length = 0
+    column = [cell for cell in column]
+    for cell in column:
+        try:
+            if len(str(cell.value)) > max_length:
+                max_length = len(cell.value)
+        except:
+            pass
+    adjusted_width = (max_length + 2)
+    ws.column_dimensions[column[0].column_letter].width = adjusted_width
+
 # Salve as alterações no arquivo Excel
 wb.save(output_file)
 
