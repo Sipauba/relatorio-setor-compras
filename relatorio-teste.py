@@ -3,10 +3,10 @@ import pandas as pd
 import openpyxl
 from openpyxl.styles import PatternFill, Alignment
 
-host = 'X'
-servico = 'X'
-usuario = 'X'
-senha = 'X'
+host = 'x'
+servico = 'x'
+usuario = 'x'
+senha = 'x'
 
 # Encontra o arquivo que aponta para o banco de dados
 cx_Oracle.init_oracle_client(lib_dir="./instantclient_21_10")
@@ -65,24 +65,55 @@ comprador = int(input('Digite aqui: '))
 
 
 
-cursor.execute("""select * FROM(
-                    select p.codfornec, f.fornecedor, p.numped, p.dtemissao,  p.vltotal, p.codfilial, p.codcomprador,
-                    (case
-                        when vltotal = vlentregue then 'TOTAL'
-                        when vlentregue = 0 then 'PENDENTE'
-                        else 'PARCIAL'
-                    end)as status_entrega,
-                    (case
-                        when tipobonific = 'B' then 'BONIFICADO'
-                        when tipobonific = 'N' then 'VENDA'
-                    end)as tipo_pedido
-                    from pcpedido p, pcfornec f where p.codfornec = f.codfornec)
-                    where status_entrega in {}
-                    and tipo_pedido in {} 
-                    and codfilial in ({})
-                    and dtemissao between '{}' and '{}'
-                    and codcomprador = {}
-                """.format(status_entrega, tipo_pedido, filiais, data_inicial, data_final, comprador))
+cursor.execute("""SELECT
+    codfornec,
+    fornecedor,
+    numped,
+    dtemissao,
+    vltotal,
+    codfilial,
+    codcomprador,
+    LISTAGG(NUMNOTA, ', ') WITHIN GROUP (ORDER BY NUMNOTA) AS NOTAS_FISCAIS,
+    MAX(status_entrega) AS status_entrega,
+    MAX(tipo_pedido) AS tipo_pedido
+FROM (
+    SELECT
+        p.codfornec,
+        f.fornecedor,
+        p.numped,
+        p.dtemissao,
+        p.vltotal,
+        p.codfilial,
+        p.codcomprador,
+        N.NUMNOTA,
+        CASE
+            WHEN p.vltotal = p.vlentregue THEN 'TOTAL'
+            WHEN p.vlentregue = 0 THEN 'PENDENTE'
+            ELSE 'PARCIAL'
+        END AS status_entrega,
+        CASE
+            WHEN p.tipobonific = 'B' THEN 'BONIFICADO'
+            WHEN p.tipobonific = 'N' THEN 'VENDA'
+        END AS tipo_pedido
+    FROM
+        pcpedido p
+        LEFT JOIN pcfornec f ON p.codfornec = f.codfornec
+        LEFT JOIN PCPEDNF PN ON p.numped = PN.numpedido
+        LEFT JOIN PCNFENT N ON PN.numtransent = N.numtransent
+    WHERE
+        p.codfilial IN ({})
+        AND p.dtemissao BETWEEN TO_DATE('{}', 'DD-MON-YYYY') AND TO_DATE('{}', 'DD-MON-YYYY')
+        AND p.codcomprador = {}
+        --AND N.ESPECIE = 'NF'
+) 
+WHERE
+    status_entrega IN {}
+    AND tipo_pedido IN {}
+GROUP BY
+    codfornec, fornecedor, numped, dtemissao, vltotal, codfilial, codcomprador
+ORDER BY
+    dtemissao
+                """.format(filiais, data_inicial, data_final, comprador, status_entrega, tipo_pedido,))
 
 resultado = cursor.fetchall()
 
@@ -116,9 +147,9 @@ green_fill = PatternFill(start_color="C6EFCE", end_color="C6EFCE", fill_type="so
 
 # Percorra as células da coluna "status_entrega" e aplique a formatação verde se o valor for "TOTAL"
 for row in range(2, ws.max_row + 1):
-    cell_value = ws.cell(row=row, column=7).value  # Coluna 7 corresponde à "status_entrega"
+    cell_value = ws.cell(row=row, column=8).value  # Coluna 8 corresponde à "status_entrega"
     if cell_value == 'TOTAL':
-        ws.cell(row=row, column=7).fill = green_fill
+        ws.cell(row=row, column=8).fill = green_fill
 
 
 # Defina um padrão de preenchimento azul
@@ -126,9 +157,9 @@ blue_fill = PatternFill(start_color="DCE6F1", end_color="DCE6F1", fill_type="sol
 
 # Percorra as células da coluna "status_entrega" e aplique a formatação azul se o valor for "PARCIAL"
 for row in range(2, ws.max_row + 1):
-    cell_value = ws.cell(row=row, column=7).value  # Coluna 7 corresponde à "status_entrega"
+    cell_value = ws.cell(row=row, column=8).value  # Coluna 8 corresponde à "status_entrega"
     if cell_value == 'PARCIAL':
-        ws.cell(row=row, column=7).fill = blue_fill
+        ws.cell(row=row, column=8).fill = blue_fill
 
 
 # Defina um padrão de preenchimento vermelho
@@ -136,9 +167,9 @@ red_fill = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="soli
 
 # Percorra as células da coluna "status_entrega" e aplique a formatação vermelho se o valor for "PENDENTE"
 for row in range(2, ws.max_row + 1):
-    cell_value = ws.cell(row=row, column=7).value  # Coluna 7 corresponde à "status_entrega"
+    cell_value = ws.cell(row=row, column=8).value  # Coluna 8 corresponde à "status_entrega"
     if cell_value == 'PENDENTE':
-        ws.cell(row=row, column=7).fill = red_fill
+        ws.cell(row=row, column=8).fill = red_fill
         
 
 # Substituir o ponto por vírgula na coluna "vltotal"
