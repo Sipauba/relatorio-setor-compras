@@ -24,6 +24,8 @@ print("""   __________  __  _______  ____  ___   _____
 \____/\____/_/  /_/_/   /_/ |_/_/  |_/____/  
                                              """)
 
+pendente = False
+
 print('Informe as filiais separadas por vírgula')
 filiais = input('Digite aqui:')
 #print(filiais)
@@ -31,25 +33,27 @@ filiais = input('Digite aqui:')
 print('Tipo do pedido, BONIFICADO, VENDA ou TODOS')
 print('Valores válidos: B, V ou T')
 tipo_pedido = str(input('Digite aqui: '))
-if tipo_pedido == 'B':
+if tipo_pedido == 'B' or tipo_pedido == 'b':
     tipo_pedido = "'BONIFICADO'"
-elif tipo_pedido == 'V':
+elif tipo_pedido == 'V' or tipo_pedido == 'v':
     tipo_pedido = "'VENDA'"
-elif tipo_pedido == 'T':
+elif tipo_pedido == 'T' or tipo_pedido == 't':
     tipo_pedido = 'BONIFICADO','VENDA'
     #print(tipo_pedido)
 
 print('Informe o status do pedido, entrega TOTAL, PARCIAL, PENDENTE, ou TODOS')
 print('Valores validos: TOT, PAR, PEN, TOD')
 status_entrega = str(input('Digite aqui: '))
-if status_entrega == 'TOT':
+if status_entrega == 'TOT' or status_entrega == 'tot':
     status_entrega = "'TOTAL'"
-elif status_entrega == 'PAR':
+elif status_entrega == 'PAR' or status_entrega == 'par':
     status_entrega = "'PARCIAL'"
-elif status_entrega == 'PEN':
+elif status_entrega == 'PEN' or status_entrega == 'pen':
     status_entrega = "'PENDENTE'"
-elif status_entrega == 'TOD':
-    status_entrega = 'TOTAL','PARCIAL','PENDENTE'
+    pendente = True
+elif status_entrega == 'TOD' or status_entrega == 'tod':
+    status_entrega = 'TOTAL','PARCIAL'
+    pendente = True
     #print(status_entrega)
 
 print('Informe a data inicial')
@@ -64,8 +68,59 @@ print('Informe o código do comprador')
 comprador = int(input('Digite aqui: '))
 
 
-
-cursor.execute("""SELECT
+if pendente == False :
+    cursor.execute("""SELECT
+        codfornec,
+        fornecedor,
+        numped,
+        dtemissao,
+        vltotal,
+        codfilial,
+        codcomprador,
+        LISTAGG(NUMNOTA, ', ') WITHIN GROUP (ORDER BY NUMNOTA) AS NOTAS_FISCAIS,
+        MAX(status_entrega) AS status_entrega,
+        MAX(tipo_pedido) AS tipo_pedido
+    FROM (
+        SELECT
+            p.codfornec,
+            f.fornecedor,
+            p.numped,
+            p.dtemissao,
+            p.vltotal,
+            p.codfilial,
+            p.codcomprador,
+            N.NUMNOTA,
+            CASE
+                WHEN p.vltotal = p.vlentregue THEN 'TOTAL'
+                WHEN p.vlentregue = 0 THEN 'PENDENTE'
+                ELSE 'PARCIAL'
+            END AS status_entrega,
+            CASE
+                WHEN p.tipobonific = 'B' THEN 'BONIFICADO'
+                WHEN p.tipobonific = 'N' THEN 'VENDA'
+            END AS tipo_pedido
+        FROM
+            pcpedido p
+            LEFT JOIN pcfornec f ON p.codfornec = f.codfornec
+            LEFT JOIN PCPEDNF PN ON p.numped = PN.numpedido
+            LEFT JOIN PCNFENT N ON PN.numtransent = N.numtransent
+        WHERE
+            p.codfilial IN ({})
+            AND p.dtemissao BETWEEN TO_DATE('{}', 'DD-MON-YYYY') AND TO_DATE('{}', 'DD-MON-YYYY')
+            AND p.codcomprador = {}
+            AND N.ESPECIE = 'NF'
+    ) 
+    WHERE
+        status_entrega IN {}
+        AND tipo_pedido IN {}
+    GROUP BY
+        codfornec, fornecedor, numped, dtemissao, vltotal, codfilial, codcomprador
+    ORDER BY
+        dtemissao
+                    """.format(filiais, data_inicial, data_final, comprador, status_entrega, tipo_pedido))
+    
+else :
+    cursor.execute("""SELECT
     codfornec,
     fornecedor,
     numped,
@@ -73,10 +128,74 @@ cursor.execute("""SELECT
     vltotal,
     codfilial,
     codcomprador,
-    LISTAGG(NUMNOTA, ', ') WITHIN GROUP (ORDER BY NUMNOTA) AS NOTAS_FISCAIS,
-    MAX(status_entrega) AS status_entrega,
-    MAX(tipo_pedido) AS tipo_pedido
+    NOTAS_FISCAIS,
+    status_entrega,
+    tipo_pedido
 FROM (
+    -- Sua primeira consulta aqui
+    SELECT
+        codfornec,
+        fornecedor,
+        numped,
+        dtemissao,
+        vltotal,
+        codfilial,
+        codcomprador,
+        LISTAGG(NUMNOTA, ', ') WITHIN GROUP (ORDER BY NUMNOTA) AS NOTAS_FISCAIS,
+        MAX(status_entrega) AS status_entrega,
+        MAX(tipo_pedido) AS tipo_pedido
+    FROM (
+        SELECT
+            p.codfornec,
+            f.fornecedor,
+            p.numped,
+            p.dtemissao,
+            p.vltotal,
+            p.codfilial,
+            p.codcomprador,
+            N.NUMNOTA,
+            CASE
+                WHEN p.vltotal = p.vlentregue THEN 'TOTAL'
+                WHEN p.vlentregue = 0 THEN 'PENDENTE'
+                ELSE 'PARCIAL'
+            END AS status_entrega,
+            CASE
+                WHEN p.tipobonific = 'B' THEN 'BONIFICADO'
+                WHEN p.tipobonific = 'N' THEN 'VENDA'
+            END AS tipo_pedido
+        FROM
+            pcpedido p
+            LEFT JOIN pcfornec f ON p.codfornec = f.codfornec
+            LEFT JOIN PCPEDNF PN ON p.numped = PN.numpedido
+            LEFT JOIN PCNFENT N ON PN.numtransent = N.numtransent
+        WHERE
+            p.codfilial IN ({0})
+            AND p.dtemissao BETWEEN TO_DATE('{1}', 'DD-MON-YYYY') AND TO_DATE('{2}', 'DD-MON-YYYY')
+            AND p.codcomprador = {3}
+            AND N.ESPECIE in ('NF')
+    ) 
+    WHERE
+        status_entrega IN {4}
+        AND tipo_pedido IN {5}
+    GROUP BY
+        codfornec, fornecedor, numped, dtemissao, vltotal, codfilial, codcomprador
+    ORDER BY
+        dtemissao
+) 
+UNION ALL
+SELECT
+    codfornec,
+    fornecedor,
+    numped,
+    dtemissao,
+    vltotal,
+    codfilial,
+    codcomprador,
+    NOTAS_FISCAIS,
+    status_entrega,
+    tipo_pedido
+FROM (
+    -- Sua segunda consulta aqui
     SELECT
         p.codfornec,
         f.fornecedor,
@@ -85,35 +204,36 @@ FROM (
         p.vltotal,
         p.codfilial,
         p.codcomprador,
-        N.NUMNOTA,
-        CASE
+        LISTAGG(N.NUMNOTA, ', ') WITHIN GROUP (ORDER BY N.NUMNOTA) AS NOTAS_FISCAIS,
+        MAX(CASE
             WHEN p.vltotal = p.vlentregue THEN 'TOTAL'
             WHEN p.vlentregue = 0 THEN 'PENDENTE'
             ELSE 'PARCIAL'
-        END AS status_entrega,
-        CASE
+        END) AS status_entrega,
+        MAX(CASE
             WHEN p.tipobonific = 'B' THEN 'BONIFICADO'
             WHEN p.tipobonific = 'N' THEN 'VENDA'
-        END AS tipo_pedido
+        END) AS tipo_pedido
     FROM
         pcpedido p
         LEFT JOIN pcfornec f ON p.codfornec = f.codfornec
         LEFT JOIN PCPEDNF PN ON p.numped = PN.numpedido
         LEFT JOIN PCNFENT N ON PN.numtransent = N.numtransent
     WHERE
-        p.codfilial IN ({})
-        AND p.dtemissao BETWEEN TO_DATE('{}', 'DD-MON-YYYY') AND TO_DATE('{}', 'DD-MON-YYYY')
-        AND p.codcomprador = {}
-        --AND N.ESPECIE = 'NF'
+        p.codfilial IN ({0})
+        AND p.dtemissao BETWEEN TO_DATE('{1}', 'DD-MON-YYYY') AND TO_DATE('{2}', 'DD-MON-YYYY')
+        AND p.codcomprador = {3}
+        --AND N.ESPECIE in ('NF')
+    GROUP BY
+        p.codfornec, f.fornecedor, p.numped, p.dtemissao, p.vltotal, p.codfilial, p.codcomprador
+    ORDER BY
+        p.dtemissao
 ) 
 WHERE
-    status_entrega IN {}
-    AND tipo_pedido IN {}
-GROUP BY
-    codfornec, fornecedor, numped, dtemissao, vltotal, codfilial, codcomprador
+    status_entrega IN ('PENDENTE')
+    AND tipo_pedido IN {5}
 ORDER BY
-    dtemissao
-                """.format(filiais, data_inicial, data_final, comprador, status_entrega, tipo_pedido,))
+    dtemissao""".format(filiais, data_inicial, data_final, comprador, status_entrega, tipo_pedido))
 
 resultado = cursor.fetchall()
 
