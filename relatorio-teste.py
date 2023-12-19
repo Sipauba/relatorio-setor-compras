@@ -3,10 +3,10 @@ import pandas as pd
 import openpyxl
 from openpyxl.styles import PatternFill, Alignment
 
-host = 'x'
-servico = 'x'
-usuario = 'x'
-senha = 'x'
+host = 'X'
+servico = 'X'
+usuario = 'X'
+senha = 'X'
 
 # Encontra o arquivo que aponta para o banco de dados
 cx_Oracle.init_oracle_client(lib_dir="./instantclient_21_10")
@@ -91,7 +91,7 @@ if pendente == False :
             p.codcomprador,
             N.NUMNOTA,
             CASE
-                WHEN p.vltotal = p.vlentregue THEN 'TOTAL'
+                WHEN ABS(p.vltotal - p.vlentregue) <= 0.1 THEN 'TOTAL'
                 WHEN p.vlentregue = 0 THEN 'PENDENTE'
                 ELSE 'PARCIAL'
             END AS status_entrega,
@@ -155,7 +155,7 @@ FROM (
             p.codcomprador,
             N.NUMNOTA,
             CASE
-                WHEN p.vltotal = p.vlentregue THEN 'TOTAL'
+                WHEN ABS(p.vltotal - p.vlentregue) <= 0.1 THEN 'TOTAL'
                 WHEN p.vlentregue = 0 THEN 'PENDENTE'
                 ELSE 'PARCIAL'
             END AS status_entrega,
@@ -207,7 +207,8 @@ FROM (
         LISTAGG(N.NUMNOTA, ', ') WITHIN GROUP (ORDER BY N.NUMNOTA) AS NOTAS_FISCAIS,
         MAX(CASE
             WHEN p.vltotal = p.vlentregue THEN 'TOTAL'
-            WHEN p.vlentregue = 0 THEN 'PENDENTE'
+            WHEN p.vlentregue = 0 AND EXISTS (SELECT * FROM pcmovpreent WHERE numped = p.numped) THEN 'AGUARDANDO ENTREGA'
+            WHEN p.vlentregue = 0 AND NOT EXISTS (SELECT * FROM pcmovpreent WHERE numped = p.numped) THEN 'AGUARDANDO FATURAMENTO'
             ELSE 'PARCIAL'
         END) AS status_entrega,
         MAX(CASE
@@ -230,7 +231,7 @@ FROM (
         p.dtemissao
 ) 
 WHERE
-    status_entrega IN ('PENDENTE')
+    status_entrega IN ('AGUARDANDO FATURAMENTO','AGUARDANDO ENTREGA')
     AND tipo_pedido IN {5}
 ORDER BY
     dtemissao""".format(filiais, data_inicial, data_final, comprador, status_entrega, tipo_pedido))
@@ -285,11 +286,21 @@ for row in range(2, ws.max_row + 1):
 # Defina um padrão de preenchimento vermelho
 red_fill = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")
 
-# Percorra as células da coluna "status_entrega" e aplique a formatação vermelho se o valor for "PENDENTE"
+# Percorra as células da coluna "status_entrega" e aplique a formatação vermelho se o valor for "AGUARDANDO FATURAMENTO"
 for row in range(2, ws.max_row + 1):
     cell_value = ws.cell(row=row, column=8).value  # Coluna 8 corresponde à "status_entrega"
-    if cell_value == 'PENDENTE':
+    if cell_value == 'AGUARDANDO FATURAMENTO':
         ws.cell(row=row, column=8).fill = red_fill
+        
+        
+# Defina um padrão de preenchimento amarelo
+yellow_fill = PatternFill(start_color="FFFF65", end_color="FFFF65", fill_type="solid")
+
+# Percorra as células da coluna "status_entrega" e aplique a formatação amarelo se o valor for "AGUARDANDO ENTREGA"
+for row in range(2, ws.max_row + 1):
+    cell_value = ws.cell(row=row, column=8).value  # Coluna 8 corresponde à "status_entrega"
+    if cell_value == 'AGUARDANDO ENTREGA':
+        ws.cell(row=row, column=8).fill = yellow_fill
         
 
 # Substituir o ponto por vírgula na coluna "vltotal"
