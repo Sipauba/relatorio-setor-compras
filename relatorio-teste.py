@@ -3,10 +3,10 @@ import pandas as pd
 import openpyxl
 from openpyxl.styles import PatternFill, Alignment
 
-host = 'X'
-servico = 'X'
-usuario = 'X'
-senha = 'X'
+host = 'x'
+servico = 'x'
+usuario = 'x'
+senha = 'x'
 
 # Encontra o arquivo que aponta para o banco de dados
 cx_Oracle.init_oracle_client(lib_dir="./instantclient_21_10")
@@ -131,6 +131,7 @@ else :
     NOTAS_FISCAIS,
     status_entrega,
     tipo_pedido
+    
 FROM (
     -- Sua primeira consulta aqui
     SELECT
@@ -191,11 +192,11 @@ SELECT
     vltotal,
     codfilial,
     codcomprador,
-    NOTAS_FISCAIS,
+    COALESCE(NULLIF(LISTAGG(NUMNOTA, ', ') WITHIN GROUP (ORDER BY NUMNOTA), ''), ' ') AS NOTAS_FISCAIS,
     status_entrega,
     tipo_pedido
 FROM (
-    -- Sua segunda consulta aqui
+    -- Segunda consulta aqui
     SELECT
         p.codfornec,
         f.fornecedor,
@@ -204,11 +205,15 @@ FROM (
         p.vltotal,
         p.codfilial,
         p.codcomprador,
-        LISTAGG(N.NUMNOTA, ', ') WITHIN GROUP (ORDER BY N.NUMNOTA) AS NOTAS_FISCAIS,
+        PN.NUMNOTA,
         MAX(CASE
-            WHEN p.vltotal = p.vlentregue THEN 'TOTAL'
-            WHEN p.vlentregue = 0 AND EXISTS (SELECT * FROM pcmovpreent WHERE numped = p.numped) THEN 'AGUARDANDO ENTREGA'
-            WHEN p.vlentregue = 0 AND NOT EXISTS (SELECT * FROM pcmovpreent WHERE numped = p.numped) THEN 'AGUARDANDO FATURAMENTO'
+            WHEN ABS(p.vltotal - p.vlentregue) <= 0.1 THEN 'TOTAL'
+            WHEN p.vlentregue = 0 AND EXISTS (
+                SELECT DISTINCT numnota FROM pcmovpreent WHERE numped = p.numped
+            ) THEN 'AGUARDANDO ENTREGA'
+            WHEN p.vlentregue = 0 AND NOT EXISTS (
+                SELECT DISTINCT numnota FROM pcmovpreent WHERE numped = p.numped
+            ) THEN 'AGUARDANDO FATURAMENTO'
             ELSE 'PARCIAL'
         END) AS status_entrega,
         MAX(CASE
@@ -218,21 +223,20 @@ FROM (
     FROM
         pcpedido p
         LEFT JOIN pcfornec f ON p.codfornec = f.codfornec
-        LEFT JOIN PCPEDNF PN ON p.numped = PN.numpedido
-        LEFT JOIN PCNFENT N ON PN.numtransent = N.numtransent
+        LEFT JOIN PCMOVPREENT PN ON p.numped = PN.numped
+        LEFT JOIN PCNFENT N ON PN.numtransent = N.numtransent AND PN.NUMTRANSENT = N.NUMTRANSENT
     WHERE
         p.codfilial IN ({0})
         AND p.dtemissao BETWEEN TO_DATE('{1}', 'DD-MON-YYYY') AND TO_DATE('{2}', 'DD-MON-YYYY')
         AND p.codcomprador = {3}
-        --AND N.ESPECIE in ('NF')
     GROUP BY
-        p.codfornec, f.fornecedor, p.numped, p.dtemissao, p.vltotal, p.codfilial, p.codcomprador
-    ORDER BY
-        p.dtemissao
-) 
+        p.codfornec, f.fornecedor, p.numped, p.dtemissao, p.vltotal, p.codfilial, p.codcomprador, PN.NUMNOTA
+) subquery
 WHERE
-    status_entrega IN ('AGUARDANDO FATURAMENTO','AGUARDANDO ENTREGA')
+    status_entrega IN ('AGUARDANDO FATURAMENTO', 'AGUARDANDO ENTREGA')
     AND tipo_pedido IN {5}
+GROUP BY
+    codfornec, fornecedor, numped, dtemissao, vltotal, codfilial, codcomprador, status_entrega, tipo_pedido
 ORDER BY
     dtemissao""".format(filiais, data_inicial, data_final, comprador, status_entrega, tipo_pedido))
 
@@ -338,7 +342,7 @@ for column in ws.columns:
             pass
     adjusted_width = (max_length + 2)
     ws.column_dimensions[column[0].column_letter].width = adjusted_width
-
+    
 # Salve as alterações no arquivo Excel
 wb.save(output_file)
 
