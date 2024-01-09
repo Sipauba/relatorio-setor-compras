@@ -121,7 +121,9 @@ tree.place(x = 40, y = 200, width = 710, height = 250)
 botao_exportar = Button(root, text = '   Exportar   ')
 botao_exportar.place(x=660, y=460)
 
-
+barra_rolamento_vertical = Scrollbar(root, orient = 'vertical', command = tree.yview)
+#tree.configure(yscrollcommand=scrollbar.set)
+barra_rolamento_vertical.place(x=751,y=200, height = 250)
 
 
 root.mainloop()
