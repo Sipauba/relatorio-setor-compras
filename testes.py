@@ -1,15 +1,31 @@
 import tkinter as tk
-import webbrowser
 
-def abrir_site(event):
-    url = "https://www.example.com"  # Substitua pelo site desejado
-    webbrowser.open_new(url)
+def criar_janela():
+    # Criar janela secundária
+    janela_secundaria = tk.Toplevel(root)
 
+    # Criar rótulo grande na linha superior que ocupa duas colunas
+    rotulo_grande = tk.Label(janela_secundaria, text="Este rótulo ocupa duas colunas", font=('Helvetica', 12))
+    rotulo_grande.grid(row=0, column=0, columnspan=2, pady=10, padx=10)
+
+    # Adicionar widgets nas duas colunas abaixo
+    rotulo_esquerda = tk.Label(janela_secundaria, text="Coluna Esquerda")
+    rotulo_direita = tk.Label(janela_secundaria, text="Coluna Direita")
+
+    rotulo_esquerda.grid(row=1, column=0, pady=10, padx=10)
+    rotulo_direita.grid(row=1, column=1, pady=10, padx=10)
+
+# Criar a janela principal
 root = tk.Tk()
-root.title("Abrir Site")
+root.title("Exemplo de columnspan")
 
-label = tk.Label(root, text="Clique aqui para abrir o site", fg="blue", cursor="hand2")
-label.pack(padx=20, pady=20)
-label.bind("<Button-1>", abrir_site)  # Associa o evento de clique à função abrir_site
+# Criar rótulo grande que ocupa duas colunas na linha superior
+rotulo_grande = tk.Label(root, text="Este rótulo ocupa duas colunas", font=('Helvetica', 14))
+rotulo_grande.grid(row=0, column=0, columnspan=2, pady=10, padx=10)
 
+# Criar botão que chama a função para criar a janela secundária
+botao = tk.Button(root, text="Criar Janela", command=criar_janela)
+botao.grid(row=1, column=0, pady=10, padx=10)
+
+# Iniciar o loop principal
 root.mainloop()
