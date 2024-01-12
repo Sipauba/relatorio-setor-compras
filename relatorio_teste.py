@@ -10,7 +10,7 @@ usuario = 'x'
 senha = 'x'
 
 # Encontra o arquivo que aponta para o banco de dados
-cx_Oracle.init_oracle_client(lib_dir="./instantclient_21_10")
+cx_Oracle.init_oracle_client(lib_dir="P://instantclient_21_10")
 
 # Faz a conexão ao banco de dados
 conecta_banco = cx_Oracle.connect(usuario, senha, f'{host}/{servico}')
