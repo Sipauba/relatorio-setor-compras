@@ -7,7 +7,7 @@ def frame_tipo(root):
                        )
     frame_tipo.place(x=395, y=5)
     
-    label_tipo = Label(frame_tipo, text='TIPO DO PEDIDO', font=('Arial', 11))
+    label_tipo = Label(frame_tipo, text='TIPO DO PEDIDO', font=('Arial', 9))
     label_tipo.grid(row=0, column=0, pady=(20,0), padx=(0,0), sticky='w')
 
     box_tipo_venda_var = IntVar()

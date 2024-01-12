@@ -7,7 +7,7 @@ def frame_status(root):
                          )
     frame_status.place(x=555, y= 5)
     
-    label_status = Label(frame_status, text='STATUS PEDIDO', font=('Arial', 11))
+    label_status = Label(frame_status, text='STATUS DO PEDIDO', font=('Arial', 9))
     label_status.grid(row=0, column=0, pady=(20,0), padx=(0,0), sticky='w')
 
     box_status_agfaturamento_var = IntVar()

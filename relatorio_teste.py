@@ -2,6 +2,7 @@ import cx_Oracle
 import pandas as pd
 import openpyxl
 from openpyxl.styles import PatternFill, Alignment
+from relatorio_teste import *
 
 host = 'x'
 servico = 'x'
