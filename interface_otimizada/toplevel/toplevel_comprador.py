@@ -6,6 +6,7 @@ from conecta_banco import cursor
 consulta_comprador = "SELECT matricula, nome FROM pcempr WHERE codsetor = 2 AND situacao = 'A'"
 cursor.execute(consulta_comprador)
 resultado_comprador = cursor.fetchall()
+codigo_comprador_sql = ''
 
 def toplevel_comprador(root):
     toplevel_comprador = Toplevel(root)
@@ -38,10 +39,22 @@ def toplevel_comprador(root):
         
     canvas_comprador.bind('<Configure>', on_configure)
     
+    lista_compradores = []
+    
     def atualizar_selecao():
-            for i, checkbox_var in enumerate(checkbox_vars):
-                if checkbox_var.get():
-                    print(f"Selecionado: {resultado_comprador[i]}")
+        nonlocal lista_compradores
+        
+        lista_compradores = []
+        
+        for i, checkbox_var in enumerate(checkbox_vars):
+            if checkbox_var.get():
+                codigo = resultado_comprador[i][0]
+                lista_compradores.append(codigo)
+                #print(f"Selecionado: {resultado_comprador[i]}")
+        
+        codigo_comprador_sql = ', '.join(map(str, lista_compradores))
+        print(codigo_comprador_sql)
+        toplevel_comprador.destroy()
 
     checkbox_vars = []
 
@@ -49,13 +62,13 @@ def toplevel_comprador(root):
     for i, (matricula, nome) in enumerate(resultado_comprador):
         var = IntVar()
         checkbox_vars.append(var)
-        checkbox = Checkbutton(frame_canvas, text=f"{matricula} - {nome}", variable=var, command=atualizar_selecao)
+        checkbox = Checkbutton(frame_canvas, text=f"{matricula} - {nome}", variable=var)
         checkbox.grid(row=i, column=0, sticky='w')
         
     frame_canvas.update_idletasks()
     canvas_comprador.config(scrollregion=canvas_comprador.bbox('all'))
 
-    botao_filial_confirmar = Button(toplevel_comprador, text='CONFIRMAR', bg='silver', command=toplevel_comprador.destroy)
+    botao_filial_confirmar = Button(toplevel_comprador, text='CONFIRMAR', bg='silver', command=atualizar_selecao)
     botao_filial_confirmar.place(x=230, y= 370)
 
     botao_filial_cancelar = Button(toplevel_comprador, text='CANCELAR', command=toplevel_comprador.destroy)

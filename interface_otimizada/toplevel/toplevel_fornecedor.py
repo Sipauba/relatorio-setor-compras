@@ -4,7 +4,6 @@ sys.path.append('../interface_otimizada')
 from conecta_banco import cursor
 
 
-
 def toplevel_fornecedor(root):
     toplevel_fornecedor = Toplevel(root)
     toplevel_fornecedor.title('FORNECEDORES')
@@ -35,7 +34,7 @@ def toplevel_fornecedor(root):
         
     canvas_fornecedor.bind('<Configure>', on_configure)
     
-    ############
+    ###########
     
     frame_canvas.update_idletasks()
     canvas_fornecedor.config(scrollregion=canvas_fornecedor.bbox('all'))
@@ -44,24 +43,19 @@ def toplevel_fornecedor(root):
     
     label_codigo = Label(toplevel_fornecedor, text='CÓDIGO', font=('Arial', 9))
     label_codigo.place(x=20, y=10)
-    #label_codigo.grid(row=0, column=0, padx=(10,0), pady=(10,0), sticky='w')
     
     campo_codigo = Entry(toplevel_fornecedor, width= 9)
     campo_codigo.place(x=20, y=30)
-    #campo_codigo.grid(row=1, column=0, padx=(10,0), sticky='w')
-    
+   
     label_fornecedor = Label(toplevel_fornecedor, text='FORNECEDOR', font=('Arial', 9))
     label_fornecedor.place(x=90, y=10)
-    #label_fornecedor.grid(row=0, column=1, padx=(20,0), pady=(10,0), sticky='w')
-    
+       
     campo_fornecedor = Entry(toplevel_fornecedor, width=33)
     campo_fornecedor.place(x=90, y=30)
-    #campo_fornecedor.grid(row=1, column=1, padx=(20,0), sticky='w')
-    
+      
     botao_pesquisar = Button(toplevel_fornecedor, text='PESQUISAR', width=10, bg='silver')
     botao_pesquisar.place(x=300, y=25)
-    #botao_pesquisar.grid(row=1, column=2, padx=(20,0), sticky='w')
-
+    
     botao_filial_confirmar = Button(toplevel_fornecedor, text='CONFIRMAR', bg='silver', command=toplevel_fornecedor.destroy)
     botao_filial_confirmar.place(x=230, y=370)
 

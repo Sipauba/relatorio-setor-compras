@@ -3,9 +3,11 @@ import sys
 sys.path.append('../interface_otimizada')
 from conecta_banco import cursor
 
+
 consulta_filial = "SELECT codigo, razaosocial FROM pcfilial WHERE dtexclusao IS NULL ORDER BY codigo"
 cursor.execute(consulta_filial)
 resultado_filial = cursor.fetchall()
+codigo_filial_sql =''
 
 def toplevel_filial(root):
     toplevel_filial = Toplevel(root)
@@ -38,24 +40,45 @@ def toplevel_filial(root):
 
     canvas_filial.bind("<Configure>", on_configure)
 
+    lista_filiais = []
+    
     def atualizar_selecao():
+        nonlocal lista_filiais  # Usar nonlocal para acessar a variável da função externa
+
+        # Limpar a lista de códigos selecionados
+        lista_filiais = []
+
         for i, checkbox_var in enumerate(checkbox_vars):
             if checkbox_var.get():
-                print(f"Selecionado: {resultado_filial[i]}")
+                codigo = resultado_filial[i][0]
+                lista_filiais.append(codigo)  # Adicionar código à lista
+
+        # Imprimir a lista de códigos (para fins de teste)
+        #print(lista_filiais)
+        #print(f"Códigos Selecionados: {', '.join(map(str, lista_filiais))}")
+        codigo_filial_sql = ', '.join(map(str, lista_filiais))
+        print(codigo_filial_sql)
+        #campo_filial.set(codigo_filial_sql.get())
+        toplevel_filial.destroy()
+        
+        #inclui_filial_campo()
+        
+        #return codigo_filial_sql
+
 
     checkbox_vars = []
 
     # Criação dos checkboxes e rótulos na janela
-    for i, (matricula, nome) in enumerate(resultado_filial):
+    for i, (codigo, razaosocial) in enumerate(resultado_filial):
         var = IntVar()
         checkbox_vars.append(var)
-        checkbox = Checkbutton(frame_canvas, text=f"{matricula} - {nome}", variable=var, command=atualizar_selecao)
+        checkbox = Checkbutton(frame_canvas, text=f"{codigo} - {razaosocial}", variable=var)
         checkbox.grid(row=i, column=0, sticky='w', padx=(0, 50))
 
     frame_canvas.update_idletasks()
     canvas_filial.config(scrollregion=canvas_filial.bbox("all"))
     
-    botao_filial_confirmar = Button(toplevel_filial, text='CONFIRMAR', bg='silver', command=toplevel_filial.destroy)
+    botao_filial_confirmar = Button(toplevel_filial, text='CONFIRMAR', bg='silver', command=atualizar_selecao)
     botao_filial_confirmar.place(x=230, y=370)
 
     botao_filial_cancelar = Button(toplevel_filial, text='CANCELAR', command=toplevel_filial.destroy)
