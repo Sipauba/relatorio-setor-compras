@@ -1,4 +1,4 @@
-host = 'x'
-servico = 'x'
-usuario = 'x'
-senha = 'x'
+host = ''
+servico = ''
+usuario = ''
+senha = ''
