@@ -27,7 +27,7 @@ def toplevel_filial(root):
     
     canvas_filial.create_window((4, 4), window=frame_canvas, anchor="nw", tags="frame")
     
-    vsb = Scrollbar(toplevel_filial, orient="vertical", command=canvas_filial.yview,)
+    vsb = Scrollbar(toplevel_filial, orient="vertical", command=canvas_filial.yview)
     vsb.pack(side="right", fill="y", pady=(0,40))
     
     canvas_filial.configure(yscrollcommand=vsb.set)

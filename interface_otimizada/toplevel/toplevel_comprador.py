@@ -1,4 +1,4 @@
-from tkinter import Button, Toplevel, Frame, SOLID, IntVar, Checkbutton
+from tkinter import Button, Toplevel, Frame, SOLID, IntVar, Checkbutton, Canvas, Scrollbar
 import sys
 sys.path.append('../interface_otimizada')
 from conecta_banco import cursor
@@ -19,14 +19,25 @@ def toplevel_comprador(root):
     toplevel_comprador.geometry('%dx%d+%d+%d' % (largura, altura, posx, posy))
     toplevel_comprador.grab_set()
     
-    frame_comprador = Frame(toplevel_comprador,
-                            width=370,
-                            height=345,
-                            relief= SOLID,
-                            bd=1
-                            )
-    frame_comprador.pack(padx=(5,20), pady=(5,50))
+    # Cria um Canvas com um Frame dentro 
+    canvas_comprador = Canvas(toplevel_comprador, borderwidth=0)
+    canvas_comprador.pack(side='left', fill='both', expand=True, pady=(0,40))
+    
+    frame_canvas = Frame(canvas_comprador)
+    
+    canvas_comprador.create_window((4,4), window=frame_canvas, anchor='nw', tags='frame')
+    
+    vsb = Scrollbar(toplevel_comprador, orient='vertical', command=canvas_comprador.yview)
+    vsb.pack(side='right', fill='y', pady=(0,40))
+    
+    canvas_comprador.configure(yscrollcommand=vsb.set)
+    
   
+    def on_configure(event):
+        canvas_comprador.configure(scrollregion=canvas_comprador.bbox('all'))
+        
+    canvas_comprador.bind('<Configure>', on_configure)
+    
     def atualizar_selecao():
             for i, checkbox_var in enumerate(checkbox_vars):
                 if checkbox_var.get():
@@ -38,11 +49,14 @@ def toplevel_comprador(root):
     for i, (matricula, nome) in enumerate(resultado_comprador):
         var = IntVar()
         checkbox_vars.append(var)
-        checkbox = Checkbutton(frame_comprador, text=f"{matricula} - {nome}", variable=var, command=atualizar_selecao)
+        checkbox = Checkbutton(frame_canvas, text=f"{matricula} - {nome}", variable=var, command=atualizar_selecao)
         checkbox.grid(row=i, column=0, sticky='w')
+        
+    frame_canvas.update_idletasks()
+    canvas_comprador.config(scrollregion=canvas_comprador.bbox('all'))
 
-"""    botao_filial_confirmar = Button(toplevel_comprador, text='CONFIRMAR', command=toplevel_comprador.destroy)
-    botao_filial_confirmar.place(x=130, y= 260)
+    botao_filial_confirmar = Button(toplevel_comprador, text='CONFIRMAR', bg='silver', command=toplevel_comprador.destroy)
+    botao_filial_confirmar.place(x=230, y= 370)
 
     botao_filial_cancelar = Button(toplevel_comprador, text='CANCELAR', command=toplevel_comprador.destroy)
-    botao_filial_cancelar.place(x=220, y=260)"""
+    botao_filial_cancelar.place(x=320, y=370)
