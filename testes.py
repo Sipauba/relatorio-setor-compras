@@ -1,41 +1,41 @@
 import tkinter as tk
 from tkinter import ttk
 
-def on_checkbox_click(event):
-    item = tree.identify_row(event.y)
-    checked = tree.item(item, 'values')[0]
-    tree.item(item, values=(not checked,))
+def on_scroll(*args):
+    canvas.yview(*args)
 
-# Criar a janela principal
 root = tk.Tk()
-root.title("Exemplo de Treeview com Checkboxes")
+root.title("Exemplo de Barra de Rolagem Vertical")
 
-# Criar a Treeview com uma coluna para checkboxes
-tree = ttk.Treeview(root, columns=("Checkbox", "Coluna 1", "Coluna 2"), show="headings")
+# Ajustando a geometria e tornando a janela não redimensionável
+root.geometry("300x400")
+root.resizable(False, False)
 
-# Configurar o cabeçalho
-tree.heading("Checkbox", text="")
-tree.heading("Coluna 1", text="Coluna 1")
-tree.heading("Coluna 2", text="Coluna 2")
+# Criando um frame que vai conter os itens
+frame = ttk.Frame(root, padding=(10, 10))
+frame.grid(row=0, column=0, sticky=(tk.N, tk.S, tk.E, tk.W))
 
-# Inserir dados de exemplo
-for i in range(5):
-    tree.insert("", "end", values=(False, f"Dado {i}", f"Outro dado {i}"))
+# Criando uma barra de rolagem vertical
+scrollbar = ttk.Scrollbar(root, orient="vertical", command=on_scroll)
 
-# Adicionar evento de clique para simular o checkbox
-tree.tag_configure('Checkbox', background='')  # Para destacar a célula clicada
-tree.bind('<ButtonRelease-1>', on_checkbox_click)
+# Criando um canvas para colocar o frame dentro
+canvas = tk.Canvas(root, yscrollcommand=scrollbar.set)
+canvas.grid(row=0, column=0, sticky=(tk.N, tk.S, tk.E, tk.W))
 
-# Adicionar uma imagem para simular um checkbox marcado
-checked_image = tk.PhotoImage(data='''R0lGODlhCAAIAMIBAAAAAP/sAACH5BAEKAAEALAAAAAAIAAgAAAIbBAA7''')
-unchecked_image = tk.PhotoImage(data='''R0lGODlhCAAIAMIFAAAAAP/sAACH5BAEKAAEALAAAAAAIAAgAAAIbBAA7''')
+# Adicionando a barra de rolagem à direita do canvas
+scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
 
-tree.image = unchecked_image
-tree.tag_add('Checkbox', '1')
-tree.item('1', values=(False, 'Dado 0', 'Outro dado 0'))
+# Configurando a expansão do canvas e do frame com a janela
+root.grid_rowconfigure(0, weight=1)
+root.grid_columnconfigure(0, weight=1)
 
-# Layout da Treeview
-tree.pack()
+# Adicionando muitos widgets ao frame (rótulos)
+for i in range(100):
+    label = ttk.Label(frame, text=f"Item {i+1}")
+    label.grid(row=i, column=0, pady=5)
 
-# Iniciar o loop principal
+# Atualizando a região visualizada pelo canvas quando o tamanho do frame é alterado
+frame.update_idletasks()
+canvas.config(scrollregion=canvas.bbox("all"))
+
 root.mainloop()
