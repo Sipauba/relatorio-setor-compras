@@ -56,6 +56,7 @@ def toplevel_filial(root):
         # Imprimir a lista de códigos (para fins de teste)
         #print(lista_filiais)
         #print(f"Códigos Selecionados: {', '.join(map(str, lista_filiais))}")
+        global codigo_filial_sql
         codigo_filial_sql = ', '.join(map(str, lista_filiais))
         print(codigo_filial_sql)
         #campo_filial.set(codigo_filial_sql.get())
@@ -63,7 +64,7 @@ def toplevel_filial(root):
         
         #inclui_filial_campo()
         
-        #return codigo_filial_sql
+        return codigo_filial_sql
 
 
     checkbox_vars = []

@@ -13,16 +13,9 @@ def frame_tipo(root):
     label_tipo.grid(row=0, column=0, pady=(20,0), padx=(0,0), sticky='w')
 
     # Variáveis de controle para os Checkbuttons
-    var_venda = IntVar(value=1)
-    var_bonificacao = IntVar(value=1)
+    var_venda = IntVar(value=0)
+    var_bonificacao = IntVar(value=0)
 
-    # Checkbuttons individuais
-    box_aguardando_faturamento = Checkbutton(frame_tipo, text='VENDA', variable=var_venda)
-    box_aguardando_faturamento.grid(row=1, column=0, sticky='w')
-    
-    box_aguardando_entrega = Checkbutton(frame_tipo, text='BONIFICAÇÃO', variable=var_bonificacao)
-    box_aguardando_entrega.grid(row=2, column=0, sticky='w')
-    
     # Função para exibir os valores dos Checkbuttons
     def exibir_valores_tipo():
         valores = [
@@ -31,12 +24,22 @@ def frame_tipo(root):
                                    [var_venda, var_bonificacao])
         ]
         valores = [valor for valor in valores if valor]  # Remove os valores vazios
+        global resultado_tipo_sql
         resultado_tipo_sql = ', '.join(valores)
         print(resultado_tipo_sql)  # Substitua por qualquer ação que você deseja fazer com a lista de valores
 
-        return resultado_tipo_sql       
+        return resultado_tipo_sql
+    
+    # Checkbuttons individuais
+    box_aguardando_faturamento = Checkbutton(frame_tipo, text='VENDA', variable=var_venda, command=exibir_valores_tipo)
+    box_aguardando_faturamento.grid(row=1, column=0, sticky='w')
+    
+    box_aguardando_entrega = Checkbutton(frame_tipo, text='BONIFICAÇÃO', variable=var_bonificacao, command=exibir_valores_tipo)
+    box_aguardando_entrega.grid(row=2, column=0, sticky='w')
+    
+           
 
-    frame_status = Frame(root,
+    """frame_status = Frame(root,
                          #relief=SOLID,
                          #bd=1
                          )
@@ -46,10 +49,10 @@ def frame_tipo(root):
     label_status.grid(row=0, column=0, pady=(20,0), padx=(0,0), sticky='w')
 
     # Variáveis de controle para os Checkbuttons
-    var_total = IntVar(value=1)
-    var_parcial = IntVar(value=1)
-    var_aguardando_faturamento = IntVar(value=1)
-    var_aguardando_entrega = IntVar(value=1)
+    var_total = IntVar(value=0)
+    var_parcial = IntVar(value=0)
+    var_aguardando_faturamento = IntVar(value=0)
+    var_aguardando_entrega = IntVar(value=0)
     
     # Checkbuttons individuais
     box_aguardando_faturamento = Checkbutton(frame_status, text='AGUARDANDO FATURAMENTO', variable=var_aguardando_faturamento)
@@ -72,6 +75,7 @@ def frame_tipo(root):
                                    [var_total, var_parcial, var_aguardando_faturamento, var_aguardando_entrega])
         ]
         valores = [valor for valor in valores if valor]  # Remove os valores vazios
+        global resultado_status_sql
         resultado_status_sql = ', '.join(valores)
         print(resultado_status_sql)  # Substitua por qualquer ação que você deseja fazer com a lista de valores
 
@@ -80,10 +84,9 @@ def frame_tipo(root):
     def clicou():
         exibir_valores_tipo()
         exibir_valores_status()
-        
-            
+    
     botao_pesquisar = Button(root, text='PESQUISAR', width=15, height=1, bg='silver', command=clicou)
-    botao_pesquisar.place(x=635, y=150)
+    botao_pesquisar.place(x=635, y=150)"""
     
 
     
