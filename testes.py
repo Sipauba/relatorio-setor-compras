@@ -1,41 +1,48 @@
-import tkinter as tk
-from tkinter import ttk
+from tkinter import Tk, Label, Frame, IntVar, Checkbutton, Button
 
-def on_scroll(*args):
-    canvas.yview(*args)
+def frame_status(root):
+    frame_status = Frame(root)
+    frame_status.pack(side='left', padx=(5, 0))  # Utilizando pack para gerenciar a geometria
 
-root = tk.Tk()
-root.title("Exemplo de Barra de Rolagem Vertical")
+    label_status = Label(frame_status, text='STATUS DO PEDIDO', font=('Arial', 9))
+    label_status.grid(row=0, column=0, pady=(20, 0), padx=(0, 0), sticky='w')
 
-# Ajustando a geometria e tornando a janela não redimensionável
-root.geometry("300x400")
-root.resizable(False, False)
+    # Variáveis de controle para os Checkbuttons
+    var_total = IntVar(value=1)
+    var_parcial = IntVar(value=1)
+    var_aguardando_faturamento = IntVar(value=1)
+    var_aguardando_entrega = IntVar(value=1)
 
-# Criando um frame que vai conter os itens
-frame = ttk.Frame(root, padding=(10, 10))
-frame.grid(row=0, column=0, sticky=(tk.N, tk.S, tk.E, tk.W))
+    # Checkbuttons individuais
+    checkbutton_aguardando_faturamento = Checkbutton(frame_status, text='AGUARDANDO FATURAMENTO', variable=var_aguardando_faturamento)
+    checkbutton_aguardando_faturamento.grid(row=1, column=0, sticky='w')
+    
+    checkbutton_aguardando_entrega = Checkbutton(frame_status, text='AGUARDANDO ENTREGA', variable=var_aguardando_entrega)
+    checkbutton_aguardando_entrega.grid(row=2, column=0, sticky='w')
+    
+    checkbutton_parcial = Checkbutton(frame_status, text='ENTREGA PARCIAL', variable=var_parcial)
+    checkbutton_parcial.grid(row=3, column=0, sticky='w')
+    
+    checkbutton_total = Checkbutton(frame_status, text='ENTREGA TOTAL', variable=var_total)
+    checkbutton_total.grid(row=4, column=0, sticky='w')
 
-# Criando uma barra de rolagem vertical
-scrollbar = ttk.Scrollbar(root, orient="vertical", command=on_scroll)
+    # Função para exibir os valores dos Checkbuttons
+    def exibir_valores():
+        valores = [
+            f"'{status}'" if var.get() else ''
+            for status, var in zip(['TOTAL', 'PARCIAL', 'AGUARDANDO FATURAMENTO', 'AGUARDANDO ENTREGA'],
+                                   [var_total, var_parcial, var_aguardando_faturamento, var_aguardando_entrega])
+        ]
+        valores = [valor for valor in valores if valor]  # Remove os valores vazios
+        resultado = ', '.join(valores)
+        print(resultado)  # Substitua por qualquer ação que você deseja fazer com a lista de valores
 
-# Criando um canvas para colocar o frame dentro
-canvas = tk.Canvas(root, yscrollcommand=scrollbar.set)
-canvas.grid(row=0, column=0, sticky=(tk.N, tk.S, tk.E, tk.W))
+    # Botão para exibir os valores
+    botao_exibir = Button(frame_status, text='Exibir Valores', command=exibir_valores)
+    botao_exibir.grid(row=5, column=0, pady=(10, 0))
 
-# Adicionando a barra de rolagem à direita do canvas
-scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
-
-# Configurando a expansão do canvas e do frame com a janela
-root.grid_rowconfigure(0, weight=1)
-root.grid_columnconfigure(0, weight=1)
-
-# Adicionando muitos widgets ao frame (rótulos)
-for i in range(100):
-    label = ttk.Label(frame, text=f"Item {i+1}")
-    label.grid(row=i, column=0, pady=5)
-
-# Atualizando a região visualizada pelo canvas quando o tamanho do frame é alterado
-frame.update_idletasks()
-canvas.config(scrollregion=canvas.bbox("all"))
-
-root.mainloop()
+# Exemplo de uso
+if __name__ == "__main__":
+    root = Tk()
+    frame_status(root)
+    root.mainloop()

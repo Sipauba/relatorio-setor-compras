@@ -1,11 +1,10 @@
 from tkinter import Button, Toplevel, Frame, Label, Entry, Canvas, Scrollbar, SOLID, IntVar, Checkbutton
 import sys
 sys.path.append('../interface_otimizada')
+#from frames.frame_forn_comp import campo_fornecedor
 from conecta_banco import cursor
 
-"""consulta_fornecedor = 'SELECT codfornec, fornecedor FROM pcfornec WHERE codfornec < 50'
-cursor.execute(consulta_fornecedor)
-resultado_fornecedor = cursor.fetchall()"""
+
 resultado_fornecedor = []
 
 codigo_fornecedor_sql = ''
@@ -89,6 +88,9 @@ def toplevel_fornecedor(root):
         codigo_fornecedor_sql = ', '.join(map(str, lista_fornecedores))
         print(codigo_fornecedor_sql)
         toplevel_fornecedor.destroy()
+        
+        
+        return codigo_fornecedor_sql
 
     frame_canvas.update_idletasks()
     canvas_fornecedor.config(scrollregion=canvas_fornecedor.bbox("all"))
