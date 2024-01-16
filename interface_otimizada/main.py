@@ -27,11 +27,11 @@ frame_data(root)
 
 frame_tipo(root)
 
-frame_status(root)
+#frame_status(root)
 
 frame_forn_comp(root)
 
-botao_pesquisar(root)
+#botao_pesquisar(root)
 
 treeview(root)
 
