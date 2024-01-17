@@ -1,13 +1,13 @@
 import tkinter as tk
-from frames.frame_filial import *
-from frames.frame_data import *
-from frames.frame_tipo import *
-from frames.frame_status import *
-from frames.frame_forn_comp import *
+from frame_filial import *
+from frame_data import *
+from frame_tipo import *
+from frame_status import *
+from frame_forn_comp import *
 from treeview import *
 from label_assinatura import *
-from botoes.botao_exportar import *
-from botoes.botao_pesquisar import *
+from botao_exportar import *
+from botao_pesquisar import *
 
 
 root = tk.Tk()

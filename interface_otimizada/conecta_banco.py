@@ -1,6 +1,6 @@
 import cx_Oracle
-import sys
-sys.path.append('../interface_otimizada')
+"""import sys
+sys.path.append('../interface_otimizada')"""
 from credenciais_oracle import *
 
 # Encontra o arquivo que aponta para o banco de dados
