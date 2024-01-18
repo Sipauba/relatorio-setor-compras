@@ -1,5 +1,5 @@
 from tkinter import Button, Toplevel, Frame, Label, Entry, Canvas, Scrollbar, SOLID, IntVar, Checkbutton
-from variaveis import *
+from variaveis import atualizar_codigo_fornecedor_sql
 """import sys
 sys.path.append('../interface_otimizada')"""
 from conecta_banco import cursor

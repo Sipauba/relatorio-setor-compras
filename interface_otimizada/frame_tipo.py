@@ -1,5 +1,5 @@
 from tkinter import Frame, Label, SOLID, Checkbutton, IntVar
-from variaveis import *
+from variaveis import atualizar_resultado_tipo_sql
 #import variaveis
 #from frame_status import exibir_valores_status
 
@@ -28,7 +28,7 @@ def frame_tipo(root):
         valores = [valor for valor in valores if valor]  # Remove os valores vazios
         global resultado_tipo_sql
         resultado_tipo_sql = ', '.join(valores)
-        print(resultado_tipo_sql)  # Substitua por qualquer ação que você deseja fazer com a lista de valores
+        #print(resultado_tipo_sql)  # Substitua por qualquer ação que você deseja fazer com a lista de valores
         atualizar_resultado_tipo_sql(resultado_tipo_sql)
     
     # Checkbuttons individuais

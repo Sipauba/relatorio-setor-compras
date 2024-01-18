@@ -21,5 +21,9 @@ def frame_filial(root) :
     botao_filial.grid(row=1, column=1, padx=(2,0), sticky='n')
    
     
-    return campo_filial
+    #return campo_filial
+    
+def atualiza_campo_filial(campo_filial,valor):
+    campo_filial.delete(0, 'end')
+    campo_filial.insert(0, valor)
     

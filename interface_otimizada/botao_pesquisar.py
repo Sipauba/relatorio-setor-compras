@@ -1,5 +1,5 @@
 from tkinter import Button
-from frame_tipo import *
+#from frame_tipo import *
 #from variaveis import *
 """import sys
 sys.path.append('../interface_otimizada')"""

@@ -2,7 +2,7 @@ from tkinter import Button, Toplevel, Frame, SOLID, IntVar, Checkbutton, Canvas,
 """import sys
 sys.path.append('../interface_otimizada')"""
 from conecta_banco import cursor
-from variaveis import *
+from variaveis import atualiza_codigo_comprador_sql
 
 consulta_comprador = "SELECT matricula, nome FROM pcempr WHERE codsetor = 2 AND situacao = 'A'"
 cursor.execute(consulta_comprador)

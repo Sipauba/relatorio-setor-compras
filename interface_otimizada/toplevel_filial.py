@@ -4,12 +4,13 @@ sys.path.append('../interface_otimizada')"""
 from conecta_banco import cursor
 from variaveis import atualiza_codigo_filial_sql
 
+
 consulta_filial = "SELECT codigo, razaosocial FROM pcfilial WHERE dtexclusao IS NULL ORDER BY codigo"
 cursor.execute(consulta_filial)
 resultado_filial = cursor.fetchall()
 codigo_filial_sql =''
 
-def toplevel_filial(root, callback):
+def toplevel_filial(root):
     toplevel_filial = Toplevel(root)
     toplevel_filial.title('FILIAIS')
     largura = 400
@@ -60,16 +61,11 @@ def toplevel_filial(root, callback):
         codigo_filial_sql = ', '.join(map(str, lista_filiais))
         #print(codigo_filial_sql)
         atualiza_codigo_filial_sql(codigo_filial_sql)
-        #atualiza_campo_filial(campo_filial, codigo_filial_sql)
         
         toplevel_filial.destroy()
         
-        #inclui_filial_campo()
-        
         return codigo_filial_sql
     
-        
-
 
     checkbox_vars = []
 

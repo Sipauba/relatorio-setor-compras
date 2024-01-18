@@ -1,5 +1,5 @@
 from tkinter import Label, Frame, SOLID, IntVar, Checkbutton
-from variaveis import *
+from variaveis import atualizar_resultado_status_sql
 
 def frame_status(root):
     frame_status = Frame(root,
@@ -27,7 +27,7 @@ def frame_status(root):
         valores = [valor for valor in valores if valor]  # Remove os valores vazios
         global resultado_status_sql
         resultado_status_sql = ', '.join(valores)
-        print(resultado_status_sql)  # Substitua por qualquer ação que você deseja fazer com a lista de valores
+        #print(resultado_status_sql)  # Substitua por qualquer ação que você deseja fazer com a lista de valores
         atualizar_resultado_status_sql(resultado_status_sql)
         return resultado_status_sql
     
