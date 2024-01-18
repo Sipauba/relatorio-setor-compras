@@ -4,12 +4,14 @@ from frame_tipo import *
 """import sys
 sys.path.append('../interface_otimizada')"""
 def x():
-    from variaveis import resultado_tipo_sql, resultado_status_sql, codigo_fornecedor_sql,codigo_filial_sql, codigo_comprador_sql
+    from variaveis import resultado_tipo_sql, resultado_status_sql, codigo_fornecedor_sql,codigo_filial_sql, codigo_comprador_sql, data_inicial_sql, data_final_sql
     print(resultado_tipo_sql)
     print(resultado_status_sql)
     print(codigo_fornecedor_sql)
     print(codigo_filial_sql)
     print(codigo_comprador_sql)
+    print(data_inicial_sql)
+    print(data_final_sql)
     
     
 def botao_pesquisar(root):
