@@ -1,4 +1,6 @@
 from tkinter import Button
+from consulta_sql import consulta
+from variaveis import gera_sql_geral
 #from frame_tipo import *
 #from variaveis import *
 """import sys
@@ -15,7 +17,7 @@ def x():
     
     
 def botao_pesquisar(root):
-    botao_pesquisar = Button(root, text='PESQUISAR', width=15, height=1, bg='silver', command=x)
+    botao_pesquisar = Button(root, text='PESQUISAR', width=15, height=1, bg='silver', command=lambda:gera_sql_geral())
     botao_pesquisar.place(x=635, y=150)
     
     
