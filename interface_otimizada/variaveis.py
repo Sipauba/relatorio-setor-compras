@@ -1,8 +1,5 @@
 from conecta_banco import cursor
-import cx_Oracle
-import pandas as pd
-import openpyxl
-from openpyxl.styles import PatternFill, Alignment
+#from exporta_excell import exporta_excell
 
 
 resultado_tipo_sql =''
@@ -252,8 +249,6 @@ def gera_sql_geral():
     cursor.execute(sql_geral)
     global dados
     dados = cursor.fetchall()
-    global dados1
-    dados1 = cursor.fetchall()
     #print(dados)
     #return dados
     from treeview import tree
@@ -263,9 +258,7 @@ def gera_sql_geral():
     # Preencher a Treeview com os dados
     for row in dados:
         tree.insert('', 'end', values=row)
+    return dados
     
-    #atualizar_resultado_consulta_geral(dado)
-    #print(sql_geral)       
-    #return sql_geral
-    #return dados
+
     

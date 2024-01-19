@@ -1,35 +1,32 @@
 import cx_Oracle
-from variaveis import dados
+from variaveis import gera_sql_geral
 from conecta_banco import cursor
 import pandas as pd
 import openpyxl
 from openpyxl.styles import PatternFill, Alignment
 
-def x():
-    from variaveis import sql_geral
-    print(sql_geral)
-
 def exporta_excell():
-    
-  
+    dado = gera_sql_geral()
+    print(dado)
     # Obter as descrições das colunas da consulta
     column_descriptions = [desc[0] for desc in cursor.description]
 
-        # Filtrar as colunas que não contêm objetos LOB
+    # Filtrar as colunas que não contêm objetos LOB
     filtered_results = []
-    for row in dados:
+    for row in dado:
         filtered_row = [str(cell) if not isinstance(cell, cx_Oracle.LOB) else '' for cell in row]
         filtered_results.append(filtered_row)
+        print(filtered_results)
 
-        # Converter os resultados em um DataFrame do Pandas
+    # Converter os resultados em um DataFrame do Pandas
     df = pd.DataFrame(filtered_results, columns=column_descriptions)
 
-        # Especifique o nome do arquivo Excel de saída
+    # Especifique o nome do arquivo Excel de saída
     output_file = "resultado_da_consulta.xlsx"
 
-    """# Salvar o DataFrame no arquivo Excel, excluindo a coluna "COMPRADOR"
-    df.drop(columns=['CODCOMPRADOR'], inplace=True)
-    df.to_excel(output_file, index=False, engine='openpyxl')"""
+   # Salvar o DataFrame no arquivo Excel, excluindo a coluna "COMPRADOR"
+    """df.drop(columns=['CODCOMPRADOR'], inplace=True)"""
+    df.to_excel(output_file, index=False, engine='openpyxl')
 
     # Abra o arquivo Excel usando openpyxl
     wb = openpyxl.load_workbook(output_file)
@@ -42,9 +39,9 @@ def exporta_excell():
 
     # Percorra as células da coluna "status_entrega" e aplique a formatação verde se o valor for "TOTAL"
     for row in range(2, ws.max_row + 1):
-        cell_value = ws.cell(row=row, column=8).value  # Coluna 8 corresponde à "status_entrega"
+        cell_value = ws.cell(row=row, column=9).value  # Coluna 9 corresponde à "status_entrega"
         if cell_value == 'TOTAL':
-            ws.cell(row=row, column=8).fill = green_fill
+            ws.cell(row=row, column=9).fill = green_fill
 
 
     # Defina um padrão de preenchimento azul
@@ -52,9 +49,9 @@ def exporta_excell():
 
     # Percorra as células da coluna "status_entrega" e aplique a formatação azul se o valor for "PARCIAL"
     for row in range(2, ws.max_row + 1):
-        cell_value = ws.cell(row=row, column=8).value  # Coluna 8 corresponde à "status_entrega"
+        cell_value = ws.cell(row=row, column=9).value  # Coluna 9 corresponde à "status_entrega"
         if cell_value == 'PARCIAL':
-            ws.cell(row=row, column=8).fill = blue_fill
+            ws.cell(row=row, column=9).fill = blue_fill
 
 
     # Defina um padrão de preenchimento vermelho
@@ -62,9 +59,9 @@ def exporta_excell():
 
     # Percorra as células da coluna "status_entrega" e aplique a formatação vermelho se o valor for "AGUARDANDO FATURAMENTO"
     for row in range(2, ws.max_row + 1):
-        cell_value = ws.cell(row=row, column=8).value  # Coluna 8 corresponde à "status_entrega"
+        cell_value = ws.cell(row=row, column=9).value  # Coluna 9 corresponde à "status_entrega"
         if cell_value == 'AGUARDANDO FATURAMENTO':
-            ws.cell(row=row, column=8).fill = red_fill
+            ws.cell(row=row, column=9).fill = red_fill
             
             
     # Defina um padrão de preenchimento amarelo
@@ -72,14 +69,14 @@ def exporta_excell():
 
     # Percorra as células da coluna "status_entrega" e aplique a formatação amarelo se o valor for "AGUARDANDO ENTREGA"
     for row in range(2, ws.max_row + 1):
-        cell_value = ws.cell(row=row, column=8).value  # Coluna 8 corresponde à "status_entrega"
+        cell_value = ws.cell(row=row, column=9).value  # Coluna 9 corresponde à "status_entrega"
         if cell_value == 'AGUARDANDO ENTREGA':
-            ws.cell(row=row, column=8).fill = yellow_fill
+            ws.cell(row=row, column=9).fill = yellow_fill
             
 
     # Substituir o ponto por vírgula na coluna "vltotal"
     for row in range(2, ws.max_row + 1):
-        cell = ws.cell(row=row, column=6)  # Coluna 6 corresponde à "vltotal"
+        cell = ws.cell(row=row, column=7)  # Coluna 7 corresponde à "vltotal"
         # Obtém o valor da célula como texto e faz a substituição do ponto por vírgula
         cell.value = str(cell.value).replace('.', ',')
         # Tenta converter o valor para float, se não for possível, mantém o valor original
@@ -92,7 +89,7 @@ def exporta_excell():
 
     # Formatar a coluna "dtemissão" no arquivo Excel para mostrar apenas a data
     for row in range(2, ws.max_row + 1):
-        cell = ws.cell(row=row, column=0)  # Coluna 0 corresponde à "dtemissão"
+        cell = ws.cell(row=row, column=1)  # Coluna 1 corresponde à "dtemissão"
         cell.number_format = 'DD/MM/YYYY'
 
     # Centralize todas as células na planilha
