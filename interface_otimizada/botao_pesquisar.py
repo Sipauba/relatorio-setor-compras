@@ -1,5 +1,4 @@
 from tkinter import Button
-from consulta_sql import consulta
 from variaveis import gera_sql_geral
 #from frame_tipo import *
 #from variaveis import *

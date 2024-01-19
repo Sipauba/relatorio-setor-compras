@@ -1,3 +1,5 @@
+import tkinter as tk
+from tkinter import filedialog
 import cx_Oracle
 from variaveis import gera_sql_geral
 from conecta_banco import cursor
@@ -7,7 +9,18 @@ from openpyxl.styles import PatternFill, Alignment
 
 def exporta_excell():
     dado = gera_sql_geral()
-    print(dado)
+    #print(dado)
+    
+    # Solicite ao usuário que selecione o diretório e o nome do arquivo de destino
+    output_file = filedialog.asksaveasfilename(
+        title="Escolha o local e o nome do arquivo Excel",
+        defaultextension=".xlsx",
+        filetypes=[("Planilha Excel", "*.xlsx")]
+    )
+
+    """if not output_file:
+        print("Operação cancelada pelo usuário.")
+        return"""
     # Obter as descrições das colunas da consulta
     column_descriptions = [desc[0] for desc in cursor.description]
 
@@ -22,17 +35,15 @@ def exporta_excell():
     df = pd.DataFrame(filtered_results, columns=column_descriptions)
 
     # Especifique o nome do arquivo Excel de saída
-    output_file = "resultado_da_consulta.xlsx"
+    #output_file = "resultado_da_consulta.xlsx"
 
-   # Salvar o DataFrame no arquivo Excel, excluindo a coluna "COMPRADOR"
+    #Salvar o DataFrame no arquivo Excel, excluindo a coluna "COMPRADOR"
     """df.drop(columns=['CODCOMPRADOR'], inplace=True)"""
     df.to_excel(output_file, index=False, engine='openpyxl')
 
     # Abra o arquivo Excel usando openpyxl
     wb = openpyxl.load_workbook(output_file)
     ws = wb.active
-
-
 
     # Defina um padrão de preenchimento verde
     green_fill = PatternFill(start_color="C6EFCE", end_color="C6EFCE", fill_type="solid")

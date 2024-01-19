@@ -1,5 +1,5 @@
 from tkinter import Button
-from exporta_excell import x, exporta_excell
+from exporta_excell import exporta_excell
 #from variaveis import exporta_excell
 
 def botao_exportar(root):

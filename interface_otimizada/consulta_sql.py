@@ -177,11 +177,4 @@ if "AGUARDANDO" in resultado_status_sql:
             dtemissao"""
         
         
-def consulta():
-    print(sql_geralx)
-    #global resultado_consulta_geral
-    #cursor.execute(sql_geral)
-    #resultado_consulta_geral = cursor.fetchall()
-    #atualizar_resultado_consulta_geral(resultado_consulta_geral)
-    
-    #return resultado_consulta_geral
+
