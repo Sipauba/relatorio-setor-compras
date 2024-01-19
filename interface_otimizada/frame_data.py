@@ -23,11 +23,6 @@ def frame_data(root):
 
         atualizar_data_inicial_sql(data_ini_formatada)
         atualizar_data_final_sql(data_fim_formatada)
-        
-        # Exemplo de impressão das datas formatadas
-        #print("Data Inicial:", data_ini_formatada)
-        #print("Data Final:", data_fim_formatada)
-        #return data_ini_formatada
     
     
     label_data_ini = Label(frame_data, text='EMISSÃO', font=('Arial', 9))

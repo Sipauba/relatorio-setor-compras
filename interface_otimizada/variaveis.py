@@ -1,4 +1,9 @@
 from conecta_banco import cursor
+import cx_Oracle
+import pandas as pd
+import openpyxl
+from openpyxl.styles import PatternFill, Alignment
+
 
 resultado_tipo_sql =''
 
@@ -243,10 +248,14 @@ def gera_sql_geral():
         ORDER BY
             dtemissao"""
                 
-    global dados
+    
     cursor.execute(sql_geral)
+    global dados
     dados = cursor.fetchall()
-    print(dados)
+    global dados1
+    dados1 = cursor.fetchall()
+    #print(dados)
+    #return dados
     from treeview import tree
     for item in tree.get_children():
         tree.delete(item)
@@ -257,6 +266,6 @@ def gera_sql_geral():
     
     #atualizar_resultado_consulta_geral(dado)
     #print(sql_geral)       
-    return sql_geral
-    return dado
-
+    #return sql_geral
+    #return dados
+    

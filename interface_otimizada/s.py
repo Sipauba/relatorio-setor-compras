@@ -121,7 +121,7 @@ if "AGUARDANDO" in resultado_status_sql:
         dtemissao"""
 
 
-
+else:
     
     sql_geral2 = f"""SELECT
             codfornec,
