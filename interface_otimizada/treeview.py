@@ -1,7 +1,7 @@
 from tkinter import ttk
 
 def treeview(root) : 
-
+    global tree
     # Define a quantidade de colunas
     tree = ttk.Treeview(root, columns=('coluna1','coluna2','coluna3','coluna4','coluna5','coluna6','coluna7','coluna8','coluna9','coluna10'))
 

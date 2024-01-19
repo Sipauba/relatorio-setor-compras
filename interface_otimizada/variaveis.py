@@ -72,32 +72,84 @@ def gera_sql_geral():
     codigo_fornecedor_sql = campo_fornecedor.get()
     codigo_comprador_sql = campo_comprador.get()
     global sql_geral
-    sql_geral = f"""SELECT
-            codfornec,
-            fornecedor,
-            numped,
-            dtemissao,
-            vltotal,
-            codfilial,
-            codcomprador,
-            NOTAS_FISCAIS,
-            status_entrega,
-            tipo_pedido
-            
-        FROM (
-            -- Sua primeira consulta aqui
-            SELECT
+    
+    if "AGUARDANDO" in resultado_status_sql:
+        sql_geral = f"""SELECT
+                dtemissao,
+                codfilial,
+                numped,
                 codfornec,
                 fornecedor,
-                numped,
-                dtemissao,
-                vltotal,
-                codfilial,
                 codcomprador,
-                LISTAGG(NUMNOTA, ', ') WITHIN GROUP (ORDER BY NUMNOTA) AS NOTAS_FISCAIS,
-                MAX(status_entrega) AS status_entrega,
-                MAX(tipo_pedido) AS tipo_pedido
+                vltotal,
+                tipo_pedido,
+                status_entrega,
+                NOTAS_FISCAIS
             FROM (
+                -- Sua primeira consulta aqui
+                SELECT
+                    codfornec,
+                    fornecedor,
+                    numped,
+                    dtemissao,
+                    vltotal,
+                    codfilial,
+                    codcomprador,
+                    LISTAGG(NUMNOTA, ', ') WITHIN GROUP (ORDER BY NUMNOTA) AS NOTAS_FISCAIS,
+                    MAX(status_entrega) AS status_entrega,
+                    MAX(tipo_pedido) AS tipo_pedido
+                FROM (
+                    SELECT
+                        p.codfornec,
+                        f.fornecedor,
+                        p.numped,
+                        p.dtemissao,
+                        p.vltotal,
+                        p.codfilial,
+                        p.codcomprador,
+                        N.NUMNOTA,
+                        CASE
+                            WHEN ABS(p.vltotal - p.vlentregue) <= 0.1 THEN 'TOTAL'
+                            WHEN p.vlentregue = 0 THEN 'PENDENTE'
+                            ELSE 'PARCIAL'
+                        END AS status_entrega,
+                        CASE
+                            WHEN p.tipobonific = 'B' THEN 'BONIFICADO'
+                            WHEN p.tipobonific = 'N' THEN 'VENDA'
+                        END AS tipo_pedido
+                    FROM
+                        pcpedido p
+                        LEFT JOIN pcfornec f ON p.codfornec = f.codfornec
+                        LEFT JOIN PCPEDNF PN ON p.numped = PN.numpedido
+                        LEFT JOIN PCNFENT N ON PN.numtransent = N.numtransent
+                    WHERE
+                        p.codfilial IN ({codigo_filial_sql})
+                        AND p.dtemissao BETWEEN TO_DATE('{data_inicial_sql}', 'DD-MON-YYYY') AND TO_DATE('{data_final_sql}', 'DD-MON-YYYY')
+                        AND p.codcomprador IN ({codigo_comprador_sql})
+                        AND N.ESPECIE in ('NF')
+                ) 
+                WHERE
+                    status_entrega IN ({resultado_status_sql})
+                    AND tipo_pedido IN ({resultado_tipo_sql})
+                GROUP BY
+                    codfornec, fornecedor, numped, dtemissao, vltotal, codfilial, codcomprador
+                ORDER BY
+                    dtemissao
+            ) 
+            UNION
+            SELECT
+                dtemissao,
+                codfilial,
+                numped,
+                codfornec,
+                fornecedor,
+                codcomprador,
+                vltotal,
+                tipo_pedido,
+                status_entrega,
+                COALESCE(NULLIF(LISTAGG(NUMNOTA, ', ') WITHIN GROUP (ORDER BY NUMNOTA), ''), ' ') AS NOTAS_FISCAIS
+            FROM (
+                -- Segunda consulta aqui
                 SELECT
                     p.codfornec,
                     f.fornecedor,
@@ -106,49 +158,54 @@ def gera_sql_geral():
                     p.vltotal,
                     p.codfilial,
                     p.codcomprador,
-                    N.NUMNOTA,
-                    CASE
+                    PN.NUMNOTA,
+                    MAX(CASE
                         WHEN ABS(p.vltotal - p.vlentregue) <= 0.1 THEN 'TOTAL'
-                        WHEN p.vlentregue = 0 THEN 'PENDENTE'
+                        WHEN p.vlentregue = 0 AND EXISTS (
+                            SELECT DISTINCT numnota FROM pcmovpreent WHERE numped = p.numped
+                        ) THEN 'AGUARDANDO ENTREGA'
+                        WHEN p.vlentregue = 0 AND NOT EXISTS (
+                            SELECT DISTINCT numnota FROM pcmovpreent WHERE numped = p.numped
+                        ) THEN 'AGUARDANDO FATURAMENTO'
                         ELSE 'PARCIAL'
-                    END AS status_entrega,
-                    CASE
+                    END) AS status_entrega,
+                    MAX(CASE
                         WHEN p.tipobonific = 'B' THEN 'BONIFICADO'
                         WHEN p.tipobonific = 'N' THEN 'VENDA'
-                    END AS tipo_pedido
+                    END) AS tipo_pedido
                 FROM
                     pcpedido p
                     LEFT JOIN pcfornec f ON p.codfornec = f.codfornec
-                    LEFT JOIN PCPEDNF PN ON p.numped = PN.numpedido
-                    LEFT JOIN PCNFENT N ON PN.numtransent = N.numtransent
+                    LEFT JOIN PCMOVPREENT PN ON p.numped = PN.numped
+                    LEFT JOIN PCNFENT N ON PN.numtransent = N.numtransent AND PN.NUMTRANSENT = N.NUMTRANSENT
                 WHERE
                     p.codfilial IN ({codigo_filial_sql})
                     AND p.dtemissao BETWEEN TO_DATE('{data_inicial_sql}', 'DD-MON-YYYY') AND TO_DATE('{data_final_sql}', 'DD-MON-YYYY')
                     AND p.codcomprador IN ({codigo_comprador_sql})
-                    AND N.ESPECIE in ('NF')
-            ) 
+                GROUP BY
+                    p.codfornec, f.fornecedor, p.numped, p.dtemissao, p.vltotal, p.codfilial, p.codcomprador, PN.NUMNOTA
+            ) subquery
             WHERE
                 status_entrega IN ({resultado_status_sql})
                 AND tipo_pedido IN ({resultado_tipo_sql})
             GROUP BY
-                codfornec, fornecedor, numped, dtemissao, vltotal, codfilial, codcomprador
+                codfornec, fornecedor, numped, dtemissao, vltotal, codfilial, codcomprador, status_entrega, tipo_pedido
             ORDER BY
-                dtemissao
-        ) 
-        UNION ALL
-        SELECT
+                dtemissao"""
+                
+    else: 
+        sql_geral = f"""SELECT
+            dtemissao,
+            codfilial,
+            numped,
             codfornec,
             fornecedor,
-            numped,
-            dtemissao,
-            vltotal,
-            codfilial,
             codcomprador,
-            COALESCE(NULLIF(LISTAGG(NUMNOTA, ', ') WITHIN GROUP (ORDER BY NUMNOTA), ''), ' ') AS NOTAS_FISCAIS,
-            status_entrega,
-            tipo_pedido
+            vltotal,
+            MAX(tipo_pedido) AS tipo_pedido,
+            MAX(status_entrega) AS status_entrega,
+            LISTAGG(NUMNOTA, ', ') WITHIN GROUP (ORDER BY NUMNOTA) AS NOTAS_FISCAIS,    
         FROM (
-            -- Segunda consulta aqui
             SELECT
                 p.codfornec,
                 f.fornecedor,
@@ -157,44 +214,46 @@ def gera_sql_geral():
                 p.vltotal,
                 p.codfilial,
                 p.codcomprador,
-                PN.NUMNOTA,
-                MAX(CASE
+                N.NUMNOTA,
+                CASE
                     WHEN ABS(p.vltotal - p.vlentregue) <= 0.1 THEN 'TOTAL'
-                    WHEN p.vlentregue = 0 AND EXISTS (
-                        SELECT DISTINCT numnota FROM pcmovpreent WHERE numped = p.numped
-                    ) THEN 'AGUARDANDO ENTREGA'
-                    WHEN p.vlentregue = 0 AND NOT EXISTS (
-                        SELECT DISTINCT numnota FROM pcmovpreent WHERE numped = p.numped
-                    ) THEN 'AGUARDANDO FATURAMENTO'
+                    WHEN p.vlentregue = 0 THEN 'PENDENTE'
                     ELSE 'PARCIAL'
-                END) AS status_entrega,
-                MAX(CASE
+                END AS status_entrega,
+                CASE
                     WHEN p.tipobonific = 'B' THEN 'BONIFICADO'
                     WHEN p.tipobonific = 'N' THEN 'VENDA'
-                END) AS tipo_pedido
+                END AS tipo_pedido
             FROM
                 pcpedido p
                 LEFT JOIN pcfornec f ON p.codfornec = f.codfornec
-                LEFT JOIN PCMOVPREENT PN ON p.numped = PN.numped
-                LEFT JOIN PCNFENT N ON PN.numtransent = N.numtransent AND PN.NUMTRANSENT = N.NUMTRANSENT
+                LEFT JOIN PCPEDNF PN ON p.numped = PN.numpedido
+                LEFT JOIN PCNFENT N ON PN.numtransent = N.numtransent
             WHERE
                 p.codfilial IN ({codigo_filial_sql})
                 AND p.dtemissao BETWEEN TO_DATE('{data_inicial_sql}', 'DD-MON-YYYY') AND TO_DATE('{data_final_sql}', 'DD-MON-YYYY')
                 AND p.codcomprador IN ({codigo_comprador_sql})
-            GROUP BY
-                p.codfornec, f.fornecedor, p.numped, p.dtemissao, p.vltotal, p.codfilial, p.codcomprador, PN.NUMNOTA
-        ) subquery
+                AND N.ESPECIE = 'NF'
+        ) 
         WHERE
             status_entrega IN ({resultado_status_sql})
             AND tipo_pedido IN ({resultado_tipo_sql})
         GROUP BY
-            codfornec, fornecedor, numped, dtemissao, vltotal, codfilial, codcomprador, status_entrega, tipo_pedido
+            codfornec, fornecedor, numped, dtemissao, vltotal, codfilial, codcomprador
         ORDER BY
             dtemissao"""
-    global dado
+                
+    global dados
     cursor.execute(sql_geral)
-    dado = cursor.fetchall()
-    print(dado)
+    dados = cursor.fetchall()
+    print(dados)
+    from treeview import tree
+    for item in tree.get_children():
+        tree.delete(item)
+
+    # Preencher a Treeview com os dados
+    for row in dados:
+        tree.insert('', 'end', values=row)
     
     #atualizar_resultado_consulta_geral(dado)
     #print(sql_geral)       
