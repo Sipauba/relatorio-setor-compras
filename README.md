@@ -13,7 +13,7 @@ Esta aplicação eu decidi mudar a forma como eu desenvolvia. Em projetos anteri
 ## Conexão com banco de dados Oracle
 O banco de dados utilizado no ERP Winthor na empresa é Oracle e a biblioteca python utilizada para fazer a conexão com o banco foi a cx_Oracle.
 
-conecta_banco.py
+`conecta_banco.py`
 ```bash
 import cx_Oracle
 from credenciais_oracle import *
@@ -31,7 +31,7 @@ Note que o código acima aponta para o diretório P da máquina local(cx_Oracle.
 
 As variáveis com as credenciais são importadas de um arquivo separado:
 
-credenciais_oracle.py
+`credenciais_oracle.py`
 ```bash
 host = ''
 servico = ''
@@ -41,7 +41,7 @@ senha = ''
 
 Com estes arquivos é possível fazer a conexão com o banco de dados, e sempre que for necessário fazer uma consulta, basta importar a variável 'cursor' do arquivo 'conecta_banco'.
 
-## Consulta SQL ao banco de dados
+## Consulta SQL
 A primeira parte do projeto foi estudar o banco de dados a fim de entender como deveria ser feito a consulta com base nas tabelas que possuem as informações relevantes para atender aos requisitos da aplicação. Após vários testes, o código SQL que faz a consulta no banco de dados é este:
 
 ```bash
@@ -148,6 +148,57 @@ WHEN p.tipobonific = 'B' THEN 'BONIFICADO'
 WHEN p.tipobonific = 'N' THEN 'VENDA'
 ```
 
+##
+Outro ponto importante da consulta é o relacionamento entre as tabelas. Esse foi um dos pontos mais desafiadores deste projeto.
+
+```bash
+FROM
+    pcpedido p
+    LEFT JOIN pcfornec f ON p.codfornec = f.codfornec
+    LEFT JOIN PCMOVPREENT PN ON p.numped = PN.numped
+    LEFT JOIN PCNFENT N ON PN.numtransent = N.numtransent AND PN.NUMTRANSENT = N.NUMTRANSENT
+```
+O código do fornecedor da tabela de pedidos (P) deve se relacionar com o código do fornecedor da tabela de fornecedores (F). Este relacionamento é importante para trazer à consulta o nome do fornecedor corretamente.
+
+O número do pedido da tabela P deve estar alinhada com o número do pedido da tabela de movimentação de entrada (PN). A partir deste relacionamento vai ser possível verificar se o pedido em questão atenderá os requisitos dos valores AGUARDANDO FATURAMENTO e AGUARDANDO ENTREGA. Tendo em vista que, se neste pedido não há registro de movimentação de entrada, então não há uma pré entrada deste pedido, portanto, não há nota faturada, AGUARDANDO FATURAMENTO. 
+
+Cada movimentação de pré-entrada gera um número de transação e cada nota fiscal de entrada gerada proveniente dessa pré-entrada, proveniente desse pedido (pois cada pedido pode ter várias notas fiscais), possui o mesmo número de transação. Esse relacionamento entre as tabelas PN e a tabela de notas fiscais de entrada (N) tornarão possível buscar todas as notas fiscais referentes ao pedido de compra.
+
+Estes são os pontos que merecem atenção especial na construção do código que irá fazer a consulta no banco. O LEFT JOIN foi usado nesses relacionamentos pois nem sempre o valor de uma tabela será encontrada em outra, exemplo: em AGUARDANDO FATURAMENTO, não será possível será possível encontrar o número do pedido na tabela PN, se fosse um INNER JOIN o código não funcionaria nesse caso.
+Posterior à isso estão as clausulas que servirão de filtros para a subconsulta.
+
+É importante explicar que não seria possível fazer essa consulta sem uma sub consulta. Pois nos requisitos do desenvolvimento da aplicação era necessário expor campos que não existem no banco de dados, como por exemplo o status do pedido. Por esse motivo foi necessário criar esses campo com os CASEs na subconsulta (consulta interna como eu mencionei anteriormente) para que a consulta externa pudesse manipular os valores desses campos que foram criados.
+
+## Criando a interface gráfica principal
+
+Como dito anteriomente, este programa foi dividido em vários arquivos onde cada um dos arquivos possui elementos fundamentais para o funcionamento da aplicação como um todo. A arquitetura desde programa foi projetada para um arquivo principal (`main.py`) criasse a janela principal de forma básica e fizesse a chamada de todos os outros elementos que irão compor a interface através de funções. Observe que este arquivo importa a maioria das funções presentes no programa:
+
+```bash
+import tkinter as tk
+from frame_filial import frame_filial
+from frame_data import frame_data
+from frame_tipo import frame_tipo
+from frame_status import frame_status
+from frame_forn_comp import frame_forn_comp
+from treeview import treeview
+from label_assinatura import label_assinatura
+from botao_exportar import botao_exportar
+from botao_pesquisar import botao_pesquisar
+```
+
+Sobre a construção da interface gráfica principal, estes foras os arquivos criados contendo os frames para montar a interface principal como um todo:
+
+- `frame_filial.py`: contém o label 'FILIAL', o campo Entry, o botão que exibe o toplevel com todas as filiais e a função que atualiza o campo entry.
+
+- `frame_data.py`: contém o label 'EMISSÃO' e 'a', dois campos DateEntry (um para data inicial e outro para data final) e a função que salva as datas em variáveis para a consulta em SQL no arquivo `variaveis.py`.
+
+- `frame_tipo.py`: contém a label 'TIPO DE PEDIDO', os Checkbuttons com seus respectivos valores (VENDA e BONIFICAÇÃO) e função que salva os valores selecionados em uma lista e faz um tratamento com os valore dessa lista, deixa na forma adequada para a consulta SQL e envia para uma função no arquivo `variaveis.py` para salvar essa variável.
+
+- `frame_status.py`: Este arquivo segue de forma identica a lógica do arquivo `frame_tipo.py`, a diferença é o que está escrito na Label e a quantidade de Checkbuttons e seus respectivos valores(TOTAL, PARCIAL, AGUARDANDO FATURAMENTO e AGUARDANDO ENTREGA).
+
+- `frame_forn_comp.py`: contém os Labels 'FORNECEDOR' e 'COMPRADOR' com seus respectivos campos Entry e seus respectivos botões que exibem o toplevel com os compradores e fornecedores, e as funções que atualizam os valores dos campos.
+
+- `treeview`: possui a Treeview com a configuração de todas as colunas e as funções responsáveis por (REVISAR ESSAS FUNÇÕES, PARECE QUE ELAS NÃO ESTÃO SENDO USADAS)
 
 
 
