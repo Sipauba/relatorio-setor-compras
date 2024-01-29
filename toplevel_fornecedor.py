@@ -1,7 +1,6 @@
 from tkinter import Button, Toplevel, Frame, Label, Entry, Canvas, Scrollbar, SOLID, IntVar, Checkbutton
 from variaveis import atualizar_codigo_fornecedor_sql
-"""import sys
-sys.path.append('../interface_otimizada')"""
+
 from conecta_banco import cursor
 
 
@@ -55,7 +54,6 @@ def toplevel_fornecedor(root):
             consulta_fornecedor = f"SELECT codfornec, fornecedor FROM pcfornec"
 
         
-        #consulta_fornecedor = f"SELECT codfornec, fornecedor FROM pcfornec WHERE codfornec = {codfornec}"
         cursor.execute(consulta_fornecedor)
         resultado_fornecedor.clear()  # Limpa os resultados antigos
         resultado_fornecedor.extend(cursor.fetchall())  # Adiciona os novos resultados

@@ -1,6 +1,4 @@
 from tkinter import Button, Toplevel, Frame, IntVar, Checkbutton, Scrollbar, Canvas
-"""import sys
-sys.path.append('../interface_otimizada')"""
 from conecta_banco import cursor
 from variaveis import atualiza_codigo_filial_sql
 
@@ -35,7 +33,6 @@ def toplevel_filial(root):
     
     canvas_filial.configure(yscrollcommand=vsb.set)
     
-
     def on_configure(event):
         canvas_filial.configure(scrollregion=canvas_filial.bbox("all"))
 
@@ -54,12 +51,8 @@ def toplevel_filial(root):
                 codigo = resultado_filial[i][0]
                 lista_filiais.append(codigo)  # Adicionar código à lista
 
-        # Imprimir a lista de códigos (para fins de teste)
-        #print(lista_filiais)
-        #print(f"Códigos Selecionados: {', '.join(map(str, lista_filiais))}")
         global codigo_filial_sql
         codigo_filial_sql = ', '.join(map(str, lista_filiais))
-        #print(codigo_filial_sql)
         atualiza_codigo_filial_sql(codigo_filial_sql)
         
         toplevel_filial.destroy()

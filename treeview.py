@@ -39,18 +39,5 @@ def treeview(root) :
     # Define a posição e as dimenções da TreeView
     tree.place(x = 40, y = 180, width = 710, height = 270)
     
-    def monta_tree(tree, dados):
-        for item in tree.get_children():
-            tree.delete(item)
-            
-        for row in dados:
-            tree.insert('','end', values=row)
+    
 
-#from variaveis import consulta_geral_sql        
-def atualiza_tree(tree, dados):
-    for item in tree.get_children():
-        tree.delete(item)
-
-    # Preencher a Treeview com os dados
-    for row in dados:
-        tree.insert('', 'end', values=row)

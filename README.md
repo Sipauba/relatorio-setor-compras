@@ -198,9 +198,47 @@ Sobre a construção da interface gráfica principal, estes foras os arquivos cr
 
 - `frame_forn_comp.py`: contém os Labels 'FORNECEDOR' e 'COMPRADOR' com seus respectivos campos Entry e seus respectivos botões que exibem o toplevel com os compradores e fornecedores, e as funções que atualizam os valores dos campos.
 
-- `treeview`: possui a Treeview com a configuração de todas as colunas e as funções responsáveis por (REVISAR ESSAS FUNÇÕES, PARECE QUE ELAS NÃO ESTÃO SENDO USADAS)
+- `treeview.py`: possui a Treeview com a configuração de todas as colunas, como cabeçalho, alinhameto e afins.
+
+- `label_assinatura.py`: possui um Label com assinatura do autor com uma função redireciona o usuário para a página web deste repositório.
+
+- `botao_exportar.py`: contém o botão responsável por chamar a função que realiza coleta os dados da consulta e salva em um arquivo excel. Essa função é importada de ouro arquivo.
+
+- `botao_pesquisar`: contém o botão com a função de chamar a função responsável por fazer a consulta. Essa função é importada de outro arquivo.
 
 
+Importante lembrar que a aplicação tem outras 3 interfaces secundárias para coleta de dados de filiais, fornecedores e compradores. Estas interfaces (Toplevel) serão explicadas posteriormente.
+
+## Interfaces secundárias (Toplevel)
+
+A interface principal está integrada com outras três interfaces menores que serão exibidas ao clicar nos botões contidos nos frames filial, fornecedor e comprador. Essas interfaces não são essenciais para o funcionamento do programa, elas foram incluídas para auxiliar o usuário nas consultas exibindo valores em checkbuttons para ser selecionados, onde este procedimento é dispensável caso o usuário tenha colocado esses valores de forma manual nos campos Entry de filial, fornecedor e comprador.
+
+`toplevel_filial.py`
+
+Responsável pela construção da toplevel contendo todas as filiais ativas no banco de dados. Ao iniciar o programa é feito uma consulta prévia para exibir as filiais disponíveis para a consulta.
+
+```bash
+SELECT codigo, razaosocial FROM pcfilial WHERE dtexclusao IS NULL ORDER BY codigo
+```
+
+Esta consulta é realizada mesmo sem o usuário acessar o toplevel de filiais. Ao abrir essa interface, é construida toda a estrutura para comportar as informações provenientes da consulta. Além da janela é criado um Canvas e um Frame dentro deste Canvas. Desta forma é possível organizar melhor os no Frame. O Canvas é necessário para que seja possível incluir uma barra de rolagem vertical para exibir os valores que não cabem na janela, o mesmo não é possível com o Frame. Neste arquivo também contém uma função(atualizar_selecao), que quando acionada pelo botão CONFIRMAR, que atualizao valor da variável de acordo com as filiais que foram selecionadas pelo usuário. Ela capta os valores, os trata para que sejam separados com vírgula quando necessário para ser usada na consulta SQL e em seguida esse valor é inserido em outra função(atualiza_codigo_filial_sql)importada do arquivo `variaveis.py` que irá armazenar esse valor para posteriormente ser usada na consulta SQL.
+
+`toplevel_comprador.py`
+
+Este arquivo segue exatamente a mesma lógica aplicada no toplevel filial, mudando apenas a consulta SQL inicial que irá exibir os compradores e o nome das funções.
+
+```bash
+SELECT codigo, razaosocial FROM pcfilial WHERE dtexclusao IS NULL ORDER BY codigo
+```
+A função responsável por armazenar a variável no arquivo `variaveis.py` é atualiza_codigo_comprador_sql.
+
+`toplevel_fornecedor.py`
+
+Apesar de semelhante ao toplevels citados anteriormente, esta interface possui algumas peculiaridades que fogem um pouco à regra das demais. Como são milhares de fornecedores cadastrados no banco de dados, seria inviável trazer essa consulta, pois a aplicação certamente iria travar e seria bem complicado buscar um ou três fornecedores específicos entre milhares. 
+
+A diferença desse toplevel para os demais é que este possui dois campos Entry voltados para filtrar a pesquisa de fornecedores acompanhados de um botão para executar a pesquisa. Um dos campos é destinado apenas para fazer a consulta pelo código do fornecedor, o outro campo faz a consulta apenas pelo nome do mesmo. Apenas ao executar a pesquisa é que os dados são inseridos no canvas seguindo à logica citada anteriormente.
+
+Outra peculiaridade é a necessidade de excluir todos os dados que foram exibidos na consulta anterior, tendo em vista que pode ser necessário pesquisar novamente em caso de erro de digitação do usuário ou outras situações. A função que executa esta tarefa se chama nova_consulta. Os valores armazenados pela seleção também são enviados pelos para o arquivo `variaveis.py` seguindo a mesma lógica citada anteriormenete pela função atualiza_codigo_fornecedor_sql.
 
 
 
