@@ -50,12 +50,12 @@ def atualiza_codigo_comprador_sql(novo_valor):
 def atualizar_data_inicial_sql(novo_valor):
     global data_inicial_sql
     data_inicial_sql = novo_valor
-    print(f"Data Inicial: {data_inicial_sql}")
+    #print(f"Data Inicial: {data_inicial_sql}")
     
 def atualizar_data_final_sql(novo_valor):
     global data_final_sql
     data_final_sql = novo_valor
-    print(f"Data Final: {data_final_sql}")
+    #print(f"Data Final: {data_final_sql}")
     
 def atualizar_resultado_consulta_geral(novo_valor):
     global consulta_geral_sql
@@ -137,8 +137,6 @@ def gera_sql_geral():
     cursor.execute(sql_geral)
     global dados
     dados = cursor.fetchall()
-    #print(dados)
-    #return dados
     from treeview import tree
     for item in tree.get_children():
         tree.delete(item)

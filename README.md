@@ -204,7 +204,7 @@ Sobre a construção da interface gráfica principal, estes foras os arquivos cr
 
 - `botao_exportar.py`: contém o botão responsável por chamar a função que realiza coleta os dados da consulta e salva em um arquivo excel. Essa função é importada de ouro arquivo.
 
-- `botao_pesquisar`: contém o botão com a função de chamar a função responsável por fazer a consulta. Essa função é importada de outro arquivo.
+- `botao_pesquisar`: contém o botão com a função de chamar a função responsável por salvar as variáveis FILIAIS, FORNECEDORES e COMPRADORES e fazer a consulta. A função em questão é `gera_sql_geral` e é importada do arquivo `variaveis.py`.
 
 
 Importante lembrar que a aplicação tem outras 3 interfaces secundárias para coleta de dados de filiais, fornecedores e compradores. Estas interfaces (Toplevel) serão explicadas posteriormente.
@@ -221,7 +221,7 @@ Responsável pela construção da toplevel contendo todas as filiais ativas no b
 SELECT codigo, razaosocial FROM pcfilial WHERE dtexclusao IS NULL ORDER BY codigo
 ```
 
-Esta consulta é realizada mesmo sem o usuário acessar o toplevel de filiais. Ao abrir essa interface, é construida toda a estrutura para comportar as informações provenientes da consulta. Além da janela é criado um Canvas e um Frame dentro deste Canvas. Desta forma é possível organizar melhor os no Frame. O Canvas é necessário para que seja possível incluir uma barra de rolagem vertical para exibir os valores que não cabem na janela, o mesmo não é possível com o Frame. Neste arquivo também contém uma função(atualizar_selecao), que quando acionada pelo botão CONFIRMAR, que atualizao valor da variável de acordo com as filiais que foram selecionadas pelo usuário. Ela capta os valores, os trata para que sejam separados com vírgula quando necessário para ser usada na consulta SQL e em seguida esse valor é inserido em outra função(atualiza_codigo_filial_sql)importada do arquivo `variaveis.py` que irá armazenar esse valor para posteriormente ser usada na consulta SQL.
+Esta consulta é realizada mesmo sem o usuário acessar o toplevel de filiais. Ao abrir essa interface, é construida toda a estrutura para comportar as informações provenientes da consulta. Além da janela é criado um Canvas e um Frame dentro deste Canvas. Desta forma é possível organizar melhor os no Frame. O Canvas é necessário para que seja possível incluir uma barra de rolagem vertical para exibir os valores que não cabem na janela, o mesmo não é possível com o Frame. Neste arquivo também contém uma função(`atualizar_selecao`), que quando acionada pelo botão CONFIRMAR, que atualizao valor da variável de acordo com as filiais que foram selecionadas pelo usuário. Ela capta os valores, os trata para que sejam separados com vírgula quando necessário para ser usada na consulta SQL e em seguida esse valor é inserido em outra função(`atualiza_codigo_filial_sql`)importada do arquivo `variaveis.py` que irá armazenar esse valor para posteriormente ser usada na consulta SQL.
 
 `toplevel_comprador.py`
 
@@ -230,7 +230,7 @@ Este arquivo segue exatamente a mesma lógica aplicada no toplevel filial, mudan
 ```bash
 SELECT codigo, razaosocial FROM pcfilial WHERE dtexclusao IS NULL ORDER BY codigo
 ```
-A função responsável por armazenar a variável no arquivo `variaveis.py` é atualiza_codigo_comprador_sql.
+A função responsável por armazenar a variável no arquivo `variaveis.py` é `atualiza_codigo_comprador_sql`.
 
 `toplevel_fornecedor.py`
 
@@ -238,7 +238,62 @@ Apesar de semelhante ao toplevels citados anteriormente, esta interface possui a
 
 A diferença desse toplevel para os demais é que este possui dois campos Entry voltados para filtrar a pesquisa de fornecedores acompanhados de um botão para executar a pesquisa. Um dos campos é destinado apenas para fazer a consulta pelo código do fornecedor, o outro campo faz a consulta apenas pelo nome do mesmo. Apenas ao executar a pesquisa é que os dados são inseridos no canvas seguindo à logica citada anteriormente.
 
-Outra peculiaridade é a necessidade de excluir todos os dados que foram exibidos na consulta anterior, tendo em vista que pode ser necessário pesquisar novamente em caso de erro de digitação do usuário ou outras situações. A função que executa esta tarefa se chama nova_consulta. Os valores armazenados pela seleção também são enviados pelos para o arquivo `variaveis.py` seguindo a mesma lógica citada anteriormenete pela função atualiza_codigo_fornecedor_sql.
+Outra peculiaridade é a necessidade de excluir todos os dados que foram exibidos na consulta anterior, tendo em vista que pode ser necessário pesquisar novamente em caso de erro de digitação do usuário ou outras situações. A função que executa esta tarefa se chama nova_consulta. Os valores armazenados pela seleção também são enviados pelos para o arquivo `variaveis.py` seguindo a mesma lógica citada anteriormenete pela função `atualiza_codigo_fornecedor_sql`.
+
+## Manipulando as variáveis da consulta SQL
+
+A aplicação funciona com 7 variáveis responsáveis por compor or filtros necessários para fazer a consulta no banco de dados, apenas uma não é obrigatória. São elas: 
+- FILAIS;
+- FORNECEDORES (não obrigatória);
+- COMPRADORES;
+- TIPO DO PEDIDO;
+- ESTATUS DO PEDIDO;
+- DATA INICIAL;
+- DATA FINAL.
+
+As variáveis FILIAIS, FORNECEDORES e COMPRADORES são obtidas a partir do campo Entry de cada um. Se o usuário utilizar os topleveis, ao confirmar a seleção, o valor escolhido será enviado para o campo Entry através de uma função(`atualiza_codigo_filial_sql`, `atualiza_codigo_comprador_sql` e `atualiza_codigo_fornecedor_sql`) presente no arquivo `variaveis.py` que faz uso de funções em seus respectivos frames para incluir o valor da variável nos campos Entry(`atualiza_campo_filial`, `atualiza_campo_comprador` e `atualiza_campo_fornecedor`). Ao clicar no botão pesquisar, a função `gera_sql_geral` é chamada de `variaveis.py` e coleta os valores contidos dentro dos campos Entry e executa a consulta com esses valores. Desta forma, não é necessário que o usuário acesse os topleveis para que a consulta funcione, tendo em vista que a consulta será realizada com os valores contidos nos campos Entry, sejam eles inseridos manualmente ou com o auxílio dos topleveis.
+
+As variáveis com o TIPO do pedido e o STATUS são são atualizadas ao clicar no checkbutton pela função `exibir_valores_tipo` e `exibir_valores_status`, e atualizadass e armazenadas na tabela de variáveis pelas funções `atualizar_resultado_tipo_sql` e `atualizar_resultado_status_sql`. Ao clicar em PESQUISAR, essas variáveis irão para a consulta SQL.
+
+As variáveis do tipo de data funcionam da mesma forma que as demais, a diferença é o tratamento mais rigoroso com a sintaxe, para que aconteça a consulta sem erros. A função resposável pela conversão dos valores obtidos do calendário é `salvar_datas` e as funções responsáveis por armazenar os valores das variáveis são `atualizar_data_inicial_sql` e `atualizar_data_final_sql`.
+
+OBS: os valores de todas as variáveis são tratados de forma que respeitem a sintaxe da linguagem SQL.
+
+## Executando a consulta SQL
+
+A variável com o código SQL está no arquivo `variaveis.py` juntamente com todas as variáveis necessárias para execução da consulta pela função `gera_sql_geral`. Essa função é responsável por coletar os valores dos campos Entry e inserir esses valores nas variáveis juntamente com as variáveis de TIPO e STATUS. Um ponto de destaque importante nessa função é sobre a não obrigatpriedade do uso da variável dos fornecedores. No código da consulta SQL discutida no começo desse artigo é possível ver a variável `fornec` e o seu valor é definido a partir da seguinte forma:
+
+```bash
+if codigo_fornecedor_sql != '':
+        fornec = f"AND codfornec IN ({codigo_fornecedor_sql})"
+```
+
+Se o valor for vazio não irá interfeir no funcionamento da consulta e não será incluido a cláusula de dos fornecedores. Mas se houver um valor, será incluído uma linha com essa cláusula para consultar por fornecedores
+
+## Exibindo o resultado da consulta
+
+Ao execultar a consulta, todo o resultado é armazenado na variável `dados` gerado pela função `gera_sql_geral`. Ao final dessa função esses dados são incluídos dentro da treeview localizada na interface principal da aplicação.
+
+```bash
+dados = cursor.fetchall()
+    from treeview import tree
+    for item in tree.get_children():
+        tree.delete(item)
+
+    # Preencher a Treeview com os dados
+    for row in dados:
+        tree.insert('', 'end', values=row)
+    return dados
+```
+Note que antes de incluir as linhas da consulta é necessário excluir os dados que podem estar na treeview, possibilitando que possa ser feito consultas suscessivas sem que haja sobreposição de dados. Sempre que for feito uma nova pesquisa, os dados da treeview serão apagados para que os novos dados sejam incluídos.
+
+## Exportando para EXCELL
+
+
+
+
+
+
 
 
 

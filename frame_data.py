@@ -1,7 +1,7 @@
 from tkinter import Frame, Label, SOLID
 from tkcalendar import DateEntry
 from variaveis import atualizar_data_inicial_sql, atualizar_data_final_sql
-#from datetime import datetime
+
 
 def frame_data(root):
     frame_data = Frame(root,

@@ -1,6 +1,4 @@
 from tkinter import Frame, Label, SOLID, Entry, Button
-"""import sys
-sys.path.append('../interface_otimizada')"""
 from toplevel_filial import toplevel_filial
 
 def frame_filial(root) :

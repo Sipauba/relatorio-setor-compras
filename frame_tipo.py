@@ -22,7 +22,7 @@ def frame_tipo(root):
     def exibir_valores_tipo():
         valores = [
             f"'{status}'" if var.get() else ''
-            for status, var in zip(['VENDA', 'BONIFICACAO'],
+            for status, var in zip(['VENDA', 'BONIFICADO'],
                                    [var_venda, var_bonificacao])
         ]
         valores = [valor for valor in valores if valor]  # Remove os valores vazios
