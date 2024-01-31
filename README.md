@@ -206,6 +206,9 @@ Sobre a construção da interface gráfica principal, estes foras os arquivos cr
 
 - `botao_pesquisar`: contém o botão com a função de chamar a função responsável por salvar as variáveis FILIAIS, FORNECEDORES e COMPRADORES e fazer a consulta. A função em questão é `gera_sql_geral` e é importada do arquivo `variaveis.py`.
 
+Esta é a interface principal:
+
+![INTERFACE PRINCIPAL](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/interface_principal.png)
 
 Importante lembrar que a aplicação tem outras 3 interfaces secundárias para coleta de dados de filiais, fornecedores e compradores. Estas interfaces (Toplevel) serão explicadas posteriormente.
 
@@ -223,6 +226,8 @@ SELECT codigo, razaosocial FROM pcfilial WHERE dtexclusao IS NULL ORDER BY codig
 
 Esta consulta é realizada mesmo sem o usuário acessar o toplevel de filiais. Ao abrir essa interface, é construida toda a estrutura para comportar as informações provenientes da consulta. Além da janela é criado um Canvas e um Frame dentro deste Canvas. Desta forma é possível organizar melhor os no Frame. O Canvas é necessário para que seja possível incluir uma barra de rolagem vertical para exibir os valores que não cabem na janela, o mesmo não é possível com o Frame. Neste arquivo também contém uma função(`atualizar_selecao`), que quando acionada pelo botão CONFIRMAR, que atualizao valor da variável de acordo com as filiais que foram selecionadas pelo usuário. Ela capta os valores, os trata para que sejam separados com vírgula quando necessário para ser usada na consulta SQL e em seguida esse valor é inserido em outra função(`atualiza_codigo_filial_sql`)importada do arquivo `variaveis.py` que irá armazenar esse valor para posteriormente ser usada na consulta SQL.
 
+![TOP FILIAL](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/top_filial.png)
+
 `toplevel_comprador.py`
 
 Este arquivo segue exatamente a mesma lógica aplicada no toplevel filial, mudando apenas a consulta SQL inicial que irá exibir os compradores e o nome das funções.
@@ -232,13 +237,19 @@ SELECT codigo, razaosocial FROM pcfilial WHERE dtexclusao IS NULL ORDER BY codig
 ```
 A função responsável por armazenar a variável no arquivo `variaveis.py` é `atualiza_codigo_comprador_sql`.
 
+![TOP COMPRADOR](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/top_comprador.png)
+
 `toplevel_fornecedor.py`
 
 Apesar de semelhante ao toplevels citados anteriormente, esta interface possui algumas peculiaridades que fogem um pouco à regra das demais. Como são milhares de fornecedores cadastrados no banco de dados, seria inviável trazer essa consulta, pois a aplicação certamente iria travar e seria bem complicado buscar um ou três fornecedores específicos entre milhares. 
 
 A diferença desse toplevel para os demais é que este possui dois campos Entry voltados para filtrar a pesquisa de fornecedores acompanhados de um botão para executar a pesquisa. Um dos campos é destinado apenas para fazer a consulta pelo código do fornecedor, o outro campo faz a consulta apenas pelo nome do mesmo. Apenas ao executar a pesquisa é que os dados são inseridos no canvas seguindo à logica citada anteriormente.
 
+![TOP FORNECEDOR](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/top_fornecedor.png)
+
 Outra peculiaridade é a necessidade de excluir todos os dados que foram exibidos na consulta anterior, tendo em vista que pode ser necessário pesquisar novamente em caso de erro de digitação do usuário ou outras situações. A função que executa esta tarefa se chama nova_consulta. Os valores armazenados pela seleção também são enviados pelos para o arquivo `variaveis.py` seguindo a mesma lógica citada anteriormenete pela função `atualiza_codigo_fornecedor_sql`.
+
+
 
 ## Manipulando as variáveis da consulta SQL
 
@@ -301,44 +312,43 @@ A aplicação pode ser usada de muitas formas diferentes se for levar em conside
 
 Ao iniciar a aplicação e se o usuário optar pelo uso dos topleveis, será necessário clicar nesses botões para exibir as respectivas janelas:
 
-[IMAGEM]
+![TELA INICIAL](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/inteface_principal_top_destaque.png)
 
 No toplevel filial o usuário poderá selecionar apenas uma filial ou várias dentre as que estão disponíveis. Ao seleciona-las, basta clicar em CONFIRMAR para retornar à interface principal:
 
-[IMAGEM]
+![TOPLEVEL FILIAL](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/topleve_filial.png)
 
 Já com os fornecedores o usuário poderá fazer a consulta a partir de um trecho do nome do fornecedor(desde que o termo esteja entre %) ou pesquisar diretamente pelo código. Ao clicar em pesquisar o resultado da pesquisa é exibido com os valores disponíveis para seleção. Depois de selecionar é só clicar em confirmar:
 
-[IMAGEM]
+![TOPLEVEL FORNECEDOR](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/toplevel_fornecedor.png)
 
 Com os compradores segue exatamente a mesma lógica do processo para selecionar as filiais:
 
-[IMAGEM]
+![TOPLEVEL COMPRADOR](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/toplevel_comprador.png)
 
 Após a inclusão das informações a partir dos respectivos topleveis(note que ao retornar para interface principal, as informações selecionadas ficam dentro dos campos entry, é a partir desses campos que a consulta será realizada), basta preencher os demais filtros de acordo a preferência do usuário e clicar no botão PESQUISAR:
 
-[IMAGEM]
+![PESQUISA](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/Interface_principal_preenchida.png)
 
 As informações coletadas na consulta serão exibidas na treeview. Feito isso, basta clicar no botão EXPORTAR para exibir a janela que irá solicitar ao usuário que renomeie o arquivo e escolha onde o mesmo será salvo: 
 
-[IMAGEM]
+![EXPORTAR](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/interface_principal_exportar.png)
+![EXPORTAR2](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/exportando.png)
 
 Este é o arquivo gerado a partir da consulta:
 
-[IMAGEM]
+![EXCELL](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/resultado_excell.png)
 
 
 - Sem uso do Toplevel:
 
-Este caso de uso é semalhante ao procedimento apresentado anteriormente, porém mais simples e rápido tendo em vista que não será necessário exibir as interfaces secundárias. Este procedimento será realizado caso o usuário tenha preferência por acrescentar os valores diretamente no campo Entry de filiais, compradores e fornecedores. Vale ressaltar que o campo FORNECEDOR não é obrigatório para realizar a consulta.
+Este caso de uso é semalhante ao procedimento apresentado anteriormente, porém mais simples e rápido tendo em vista que não será necessário exibir as interfaces secundárias. Este procedimento será realizado caso o usuário tenha preferência por acrescentar os valores diretamente no campo Entry de filiais, compradores e fornecedores. Vale ressaltar que o campo FORNECEDOR não é obrigatório para realizar a consulta.Após preencher os campos, selecionar os demais filtros como datas, tipo de pedido e status do pedido e clicar em PESQUISAR, o resultado será exibido na treeview:
 
-[IMAGEM]
-
-Após preencher os campos, selecionar os demais filtros como datas, tipo de pedido e status do pedido e clicar em PESQUISAR, o resultado será exibido na treeview:
-
-[IMAGEM]
+![INTERFACE](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/Interface_principal_preenchida2.png)
 
 E ao exportar o arquivo como demonstrado anteriormente, será possível obter a planilha como o exemplo abaixo.
+
+![EXCELL2](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/resultado_excell2.png)
 
 ##
 
