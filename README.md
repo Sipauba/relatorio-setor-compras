@@ -301,42 +301,43 @@ A aplicação pode ser usada de muitas formas diferentes se for levar em conside
 
 Ao iniciar a aplicação e se o usuário optar pelo uso dos topleveis, será necessário clicar nesses botões para exibir as respectivas janelas:
 
-[IMAGEM]
+![TELA INICIAL](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/inteface_principal_top_destaque.png)
 
 No toplevel filial o usuário poderá selecionar apenas uma filial ou várias dentre as que estão disponíveis. Ao seleciona-las, basta clicar em CONFIRMAR para retornar à interface principal:
 
-[IMAGEM]
+![TOPLEVEL FILIAL](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/topleve_filial.png)
 
 Já com os fornecedores o usuário poderá fazer a consulta a partir de um trecho do nome do fornecedor(desde que o termo esteja entre %) ou pesquisar diretamente pelo código. Ao clicar em pesquisar o resultado da pesquisa é exibido com os valores disponíveis para seleção. Depois de selecionar é só clicar em confirmar:
 
-[IMAGEM]
+![TOPLEVEL FORNECEDOR](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/toplevel_fornecedor.png)
 
 Com os compradores segue exatamente a mesma lógica do processo para selecionar as filiais:
 
-[IMAGEM]
+![TOPLEVEL COMPRADOR](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/toplevel_comprador.png)
 
 Após a inclusão das informações a partir dos respectivos topleveis(note que ao retornar para interface principal, as informações selecionadas ficam dentro dos campos entry, é a partir desses campos que a consulta será realizada), basta preencher os demais filtros de acordo a preferência do usuário e clicar no botão PESQUISAR:
 
-[IMAGEM]
+![PESQUISA](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/Interface_principal_preenchida.png)
 
 As informações coletadas na consulta serão exibidas na treeview. Feito isso, basta clicar no botão EXPORTAR para exibir a janela que irá solicitar ao usuário que renomeie o arquivo e escolha onde o mesmo será salvo: 
 
-[IMAGEM]
+![EXPORTAR](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/interface_principal_exportar.png)
+![EXPORTAR2](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/exportando.png)
 
 Este é o arquivo gerado a partir da consulta:
 
-[IMAGEM]
+![EXCELL](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/resultado_excell.png)
 
 
 - Sem uso do Toplevel:
 
 Este caso de uso é semalhante ao procedimento apresentado anteriormente, porém mais simples e rápido tendo em vista que não será necessário exibir as interfaces secundárias. Este procedimento será realizado caso o usuário tenha preferência por acrescentar os valores diretamente no campo Entry de filiais, compradores e fornecedores. Vale ressaltar que o campo FORNECEDOR não é obrigatório para realizar a consulta.
 
-[IMAGEM]
+![INTERFACE](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/Interface_principal_preenchida2.png)
 
 Após preencher os campos, selecionar os demais filtros como datas, tipo de pedido e status do pedido e clicar em PESQUISAR, o resultado será exibido na treeview:
 
-[IMAGEM]
+![EXCELL2](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/resultado_excell2.png)
 
 E ao exportar o arquivo como demonstrado anteriormente, será possível obter a planilha como o exemplo abaixo.
 
