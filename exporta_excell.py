@@ -9,7 +9,6 @@ from openpyxl.styles import PatternFill, Alignment
 
 def exporta_excell():
     dado = gera_sql_geral()
-    #print(dado)
     
     # Solicite ao usuário que selecione o diretório e o nome do arquivo de destino
     output_file = filedialog.asksaveasfilename(
@@ -18,9 +17,6 @@ def exporta_excell():
         filetypes=[("Planilha Excel", "*.xlsx")]
     )
 
-    """if not output_file:
-        print("Operação cancelada pelo usuário.")
-        return"""
     # Obter as descrições das colunas da consulta
     column_descriptions = [desc[0] for desc in cursor.description]
 
@@ -34,11 +30,8 @@ def exporta_excell():
     # Converter os resultados em um DataFrame do Pandas
     df = pd.DataFrame(filtered_results, columns=column_descriptions)
 
-    # Especifique o nome do arquivo Excel de saída
-    #output_file = "resultado_da_consulta.xlsx"
 
-    #Salvar o DataFrame no arquivo Excel, excluindo a coluna "COMPRADOR"
-    """df.drop(columns=['CODCOMPRADOR'], inplace=True)"""
+    #Salvar o DataFrame no arquivo Excel
     df.to_excel(output_file, index=False, engine='openpyxl')
 
     # Abra o arquivo Excel usando openpyxl

@@ -289,6 +289,63 @@ Note que antes de incluir as linhas da consulta é necessário excluir os dados 
 
 ## Exportando para EXCELL
 
+O arquivo que contém o código e a função para exportar os dados é o `exporta_excell.py` e possui apenas uma função, `exporta_excell`. Esta função é acionada ao clica no botão EXPORTAR presente na interface principal. Ao ser acionada, o primeiro passo é criar uma variável (dado) com os dados fornecidos pela função `gera_sql_geral` que é responsável por executar a consulta no banco de dados com as variáveis fornecidas pelo usuário. Após guardar os dados a função exibe uma telapara o usuário solicitando que o mesmo escolha o local onde será salvo o arquivo xlsx e altere o nome do arquivo. Em seguida, com uso da biblioteca pandas os dados são inseridos no arquivo. Após as informações estrem inseridas, inicia-se uma série de procedimentos de formatação, como alinhamento, alteração da cor dos campos de acordo com o resultado e formatação de alguns campos como DATA e VLTOTAL para que seja possível tratar esses dados como data e valor financeiro dentro do excell. Feito todos esses procedimentos, o arquivo é salvo no local selecionado com o nome escolhido.
+
+Obs: o arquivo com todos esses procedimentos está comentado em cada trecho, sendo possível verificar o que cada parte do código ira executar.
+
+## Exemplos de caso de uso
+
+A aplicação pode ser usada de muitas formas diferentes se for levar em consideração a combinação de variáveis utilizadas. Mas para entendimento da lógica do código descrita anteriormente, será representado dois simples exemplos de uso: utilizando o toplevel e usando apenas os campos entry.
+
+- Fazendo uso do Toplevel:
+
+Ao iniciar a aplicação e se o usuário optar pelo uso dos topleveis, será necessário clicar nesses botões para exibir as respectivas janelas:
+
+[IMAGEM]
+
+No toplevel filial o usuário poderá selecionar apenas uma filial ou várias dentre as que estão disponíveis. Ao seleciona-las, basta clicar em CONFIRMAR para retornar à interface principal:
+
+[IMAGEM]
+
+Já com os fornecedores o usuário poderá fazer a consulta a partir de um trecho do nome do fornecedor(desde que o termo esteja entre %) ou pesquisar diretamente pelo código. Ao clicar em pesquisar o resultado da pesquisa é exibido com os valores disponíveis para seleção. Depois de selecionar é só clicar em confirmar:
+
+[IMAGEM]
+
+Com os compradores segue exatamente a mesma lógica do processo para selecionar as filiais:
+
+[IMAGEM]
+
+Após a inclusão das informações a partir dos respectivos topleveis(note que ao retornar para interface principal, as informações selecionadas ficam dentro dos campos entry, é a partir desses campos que a consulta será realizada), basta preencher os demais filtros de acordo a preferência do usuário e clicar no botão PESQUISAR:
+
+[IMAGEM]
+
+As informações coletadas na consulta serão exibidas na treeview. Feito isso, basta clicar no botão EXPORTAR para exibir a janela que irá solicitar ao usuário que renomeie o arquivo e escolha onde o mesmo será salvo: 
+
+[IMAGEM]
+
+Este é o arquivo gerado a partir da consulta:
+
+[IMAGEM]
+
+
+- Sem uso do Toplevel:
+
+Este caso de uso é semalhante ao procedimento apresentado anteriormente, porém mais simples e rápido tendo em vista que não será necessário exibir as interfaces secundárias. Este procedimento será realizado caso o usuário tenha preferência por acrescentar os valores diretamente no campo Entry de filiais, compradores e fornecedores. Vale ressaltar que o campo FORNECEDOR não é obrigatório para realizar a consulta.
+
+[IMAGEM]
+
+Após preencher os campos, selecionar os demais filtros como datas, tipo de pedido e status do pedido e clicar em PESQUISAR, o resultado será exibido na treeview:
+
+[IMAGEM]
+
+E ao exportar o arquivo como demonstrado anteriormente, será possível obter a planilha como o exemplo abaixo.
+
+##
+
+Importante informar que ambos resultados podem ser obtidos das duas formas sem nenhuma diferença nos dados, desde que os filtros usados para um caso sejam os mesmos usados no outro.
+
+# Conclusão
+
 
 
 
