@@ -356,6 +356,17 @@ Importante informar que ambos resultados podem ser obtidos das duas formas sem n
 
 # Conclusão
 
+# Sobre a experiência do autor
+
+Importante salientar que a ideia deste projeto não foi minha. A equipe do setor de compras me procurou, explicou a necessidade de uma melhoria no processo e me prestou auxílio ao me explicar todo os procedimentos, regras de negócio e ferramentas envolvidas de forma que eu compreendesse o método atual e pudesse otimizá-lo. A partir desse momento passei algumas semanas estudando as ferramentas que me foram fornecidas por eles e parti para o banco de dados em busca de unir os dados necessários para gerar a informação necessária. Feito isso parti para o processo de desenvolvimento da interface gráfica.
+
+O programa utilizando python não é a melhor linguagem para resolver este problema em questão, tendo em vista que a aplicação deste projeto foi integrada ao ERP Winthor de forma que todos os usuários da empresa possam acessar desde que seja permitido o acesso, pois a linguagem nativa do winthor é delphi. Essa linguagem é mais otimizada pra esse tipo de tarefa, porém, não a domino. O projeto apresenta alguns problemas como o tamanho do arquivo executável final e também apresenta demora ao abrir a aplicação no computador local justamente pelo tamanho da aplicação, pois a aplicação só executa na máquina após a transferência completa.
+
+A forma como desenvolvida essa aplicação foi de certa forma inovadora para a minha experiência, já que outras aplicações que eu desenvolvi anteriormente não utilizava outros arquivos. Tudo se resumia em um único arquivo gigante com todas as funções e funcionalidade da aplicação. Ao começar a desenvolver esse programa eu mantive esse hábito, porém decidi fazer diferente para que o código ficasse mais limpo, organizado e mais fácil de fazer a manutenção. Após o processo de desenvolvimento eu percebi que essa decisão foi muito acertiva, pois notei que a primeira versão do projeto estava muito grande em um único arquivo e sempre que era necessário fazer alguma alteração em alguma parte mais antiga do código era bem complicado. Conforme a quantidade de linhas escritas aumentava, mais inviável se tornava a manutenção do programa. 
+
+Ao aderir a este novo método também pude perceber que preciso melhorar bastante minha programação orientada à objetos. Importar variáveis e funções dos outros arquivos muitas vezes se tornava um desafio mesmo sendo procedimentos simples e ao finalizar a aplicação refleti sobre o NÃO uso de classes e que se eu tivesse feito mais uso delas, talvez o código ficasse bem mais otimizado. Assumi o compromisso de estudar POO e melhorar bastante nesse ponto.
+
+Gostaria de detalhar de forma muito mais minuciosa alguns trechos do programa, como a criação de canvas, o processo de exportação para excell, a criação de barras de rolagem, o processo de formatação do arquivo excell, o tratamento de variáveis para que fosse possível usa-las no código SQL e ETC. Muitos desses métodos são novidade para mim, o que me fez atulizar bastante do ChatGPT para o desenvolvimento desta aplicação. Por este motivo não pude detalhar cetos trechos do código da forma como eu gostaria, pois em vários desses métodos eu não consegui entender 100% do seu funcionamento pela minha falta de experiência. Porém estou satisfeito com o resultado final, mesmo usando trechos de códigos que não sei explicar bem como funciona, fui capaz de fazer com que toda a estrutura funcionasse de maneira harmônica. A experiência aumenta com o tempo e prática.
 
 
 
