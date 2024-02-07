@@ -5,7 +5,27 @@ Este programa tem por objetivo facilitar e agilizar (agilizar bastante) o proces
 
 ## O antigo processo
 
+O processo anterior é simples, mas não é otimizado, o que requer mais tempo. Segundo a equipe de compras, o processo era feito durante um turno uma vez na semana. 
+
+Primeiramente é iniciado a rotina 211 do winthor, onde serão coletadas as informações necessárias sobre os pedidos de compras. Após preencher os filtros e realizar a pesquisa é possível verificar todos os pedidos com seus resectivos status e na parte inferior é exibido as notas fiscais que compões o pedido, caso haja alguma nota fiscal faturada:
+
+![DEMONSTRAÇÃO 211](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/211_demonstracao.png)
+
+Após a consulta, cada registro de pedido era incluído manualmente em cada linha de uma planilha de excell, REGISTRO POR REGISTRO.
+
+![DEMONTRAÇÃO PLANILHA](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/demonstracao_planilha.png)
+
+Este é o problema que consome bastante tempo no processo. Pois cada registro tem que ser incluido manualmente , linha por linha, registro por registro, estando sujeito à erros.
+
 ## O novo processo
+
+Ao preencher todos os filtros selecionados no programa e realizado a pesquisa, é possível vizualizar todas as informações pertinentes para a construção do follow up:
+
+![DEMONSTRAÇÃO NOVA APLICAÇÃO](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/Interface_principal_preenchida2.png)
+
+Porém, é possível exportar os dados da consulta em uma planilha excell já formatada. Anulando a necessidade de incluir registros manualmente:
+
+![PLANILHA JÁ FORMATADA](https://github.com/Sipauba/relatorio-setor-compras/blob/main/imagens/resultado_excell.png)
 
 # Sobre o processo de desenvolvimento
 Esta aplicação eu decidi mudar a forma como eu desenvolvia. Em projetos anteriores eu sempre usava apenas um arquivo contendo todo o código para criar a aplicação, neste projeto decidi fazer diferente. Criei vários arquivos contendo funções separadas e um arquivo principal que chama as funções. Isso permitiu que fosse muito mais fácil encontrar determminados trechos do código e fazer a manutenção nos mesmos. O que eu não esperava era descobrir que esse método seria o único viável, tendo em vista que o número de linhas escritas aumentava cada vez mais e eu pude perceber que meu método antigo era inviável para esse projeto. A estrutura gráfica do programa é separada por partes de forma que possam ser alteradas separadamente sem afetar as outras partes, o que facilitou ao fazer as diversas modificações solicitadas pela equipe do setor de compras. Outra mudança em relação à contrução do programa foi voltada à utilização do client oracle necessário para fazer a conexão com o banco de dados. Em aplicações passadas, ao finalizar o projeto, eu sempre compactava o programa para a sua forma executável junto com a pasta do client. Este procedimento deixava o executável mais lento e muito maior, tendo em vista que a pasta do client tem aproximadamente 100 Mb. Neste projeto, e em projetos futuros, deixei o client separado em um servidor e programei a aplicação para apontar para este local. Este servidor é necessário estar conectado à todos os computadores da empresa para que possam acessar o ERP WinThor, então é garantido que todos os computadores dentro da rede da empresa tenham acesso à esse diretório. Esta mudança deixou a aplicação menor e mais leve, entretando, está mais sujeita a lentidão por conta de eventuais instabilidades na rede interna.
@@ -355,6 +375,8 @@ E ao exportar o arquivo como demonstrado anteriormente, será possível obter a 
 Importante informar que ambos resultados podem ser obtidos das duas formas sem nenhuma diferença nos dados, desde que os filtros usados para um caso sejam os mesmos usados no outro.
 
 # Conclusão
+
+O desenvolvimento da aplicação teve impacto significativo na otimização do tempo dos compradores ao fazer o processo do Follow UP.
 
 # Sobre a experiência do autor
 
