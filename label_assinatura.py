@@ -7,6 +7,6 @@ def abrir_site(event):
 
 def label_assinatura(root):
     label_assinatura = Label(root, text = 'By Sipauba', fg = 'gray', cursor = 'hand2')
-    label_assinatura.place(x=40 ,y=450 )
+    label_assinatura.place(x=40 ,y=550 )
     label_assinatura.bind("<Button-1>", abrir_site)
 

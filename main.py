@@ -13,8 +13,8 @@ from botao_pesquisar import botao_pesquisar
 root = tk.Tk()
 root.title('Follow Up')
 # Esse trecho até o geometry() é um algorítmo que faz a janela iniciar bem no centro da tela, independente a resolução do monitor
-largura = 800
-altura = 500
+largura = 1000
+altura = 600
 largura_screen = root.winfo_screenwidth()
 altura_screen = root.winfo_screenheight()
 posx = largura_screen/2 - largura/2

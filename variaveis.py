@@ -78,7 +78,7 @@ def gera_sql_geral():
         fornec = f"AND codfornec IN ({codigo_fornecedor_sql})"
     sql_geral = f"""
         SELECT
-            dtemissao,
+            TO_CHAR(dtemissao, 'DD/MM/YYYY') AS dtemissao,
             codfilial,
             numped,
             codfornec,
@@ -87,9 +87,10 @@ def gera_sql_geral():
             vltotal,
             tipo_pedido,
             status_entrega,
-            COALESCE(NULLIF(LISTAGG(NUMNOTA, ', ') WITHIN GROUP (ORDER BY NUMNOTA), ''), ' ') AS NOTAS_FISCAIS
+            COALESCE(NULLIF(LISTAGG(NUMNOTA, ', ') WITHIN GROUP (ORDER BY NUMNOTA), ''), ' ') AS NOTAS_FISCAIS,
+            TO_CHAR(prev_entrega, 'DD/MM/YYYY') AS prev_ent,
+            COALESCE(NULLIF(TO_CHAR(dtfaturamento, 'DD/MM/YYYY'), ''), ' ') AS dtfat
         FROM (
-            -- Segunda consulta aqui
             SELECT
                 p.codfornec,
                 f.fornecedor,
@@ -99,6 +100,8 @@ def gera_sql_geral():
                 p.codfilial,
                 p.codcomprador,
                 PN.NUMNOTA,
+                f.prazoentrega,
+                MIN (pn.dtmov) AS dtfaturamento,
                 MAX(CASE
                     WHEN ABS(p.vltotal - p.vlentregue) <= 0.1 THEN 'TOTAL'
                     WHEN p.vlentregue = 0 AND EXISTS (
@@ -112,7 +115,8 @@ def gera_sql_geral():
                 MAX(CASE
                     WHEN p.tipobonific = 'B' THEN 'BONIFICADO'
                     WHEN p.tipobonific = 'N' THEN 'VENDA'
-                END) AS tipo_pedido
+                END) AS tipo_pedido,
+                (p.dtemissao + f.prazoentrega + 1) AS prev_entrega
             FROM
                 pcpedido p
                 LEFT JOIN pcfornec f ON p.codfornec = f.codfornec
@@ -123,14 +127,14 @@ def gera_sql_geral():
                 AND p.dtemissao BETWEEN TO_DATE('{data_inicial_sql}', 'DD-MON-YYYY') AND TO_DATE('{data_final_sql}', 'DD-MON-YYYY')
                 AND p.codcomprador IN ({codigo_comprador_sql})
             GROUP BY
-                p.codfornec, f.fornecedor, p.numped, p.dtemissao, p.vltotal, p.codfilial, p.codcomprador, PN.NUMNOTA
+                p.codfornec, f.fornecedor, p.numped, p.dtemissao, p.vltotal, p.codfilial, p.codcomprador, PN.NUMNOTA, f.prazoentrega, pn.dtmov
         ) subquery
         WHERE
             status_entrega IN ({resultado_status_sql})
             AND tipo_pedido IN ({resultado_tipo_sql})
             {fornec}
         GROUP BY
-            codfornec, fornecedor, numped, dtemissao, vltotal, codfilial, codcomprador, status_entrega, tipo_pedido
+            codfornec, fornecedor, numped, dtemissao, vltotal, codfilial, codcomprador, status_entrega, tipo_pedido, prev_entrega, dtfaturamento
         ORDER BY
             dtemissao"""
                     
