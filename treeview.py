@@ -21,7 +21,7 @@ def treeview(root) :
     tree.heading('coluna9', text = 'SITUAÇÃO')
     tree.heading('coluna10', text = 'NF')
     tree.heading('coluna11', text = 'PREVENT')
-    tree.heading('coluna12', text = 'DTFAT')
+    tree.heading('coluna12', text = 'DIAS')
 
     # Define uma largura padrão para cada coluna
     tree.column('coluna1', width = 60)

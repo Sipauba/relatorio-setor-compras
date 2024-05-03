@@ -88,7 +88,8 @@ def gera_sql_geral():
             tipo_pedido,
             status_entrega,
             COALESCE(NULLIF(LISTAGG(NUMNOTA, ', ') WITHIN GROUP (ORDER BY NUMNOTA), ''), ' ') AS NOTAS_FISCAIS,
-            TO_CHAR(prev_entrega, 'DD/MM/YYYY') AS prev_ent--,
+            TO_CHAR(prev_entrega, 'DD/MM/YYYY') AS prev_ent,
+            TRUNC(SYSDATE - dtemissao) AS dias
             --COALESCE(NULLIF(TO_CHAR(dtfaturamento, 'DD/MM/YYYY'), ''), ' ') AS dtfat
         FROM (
             SELECT
