@@ -78,7 +78,7 @@ def gera_sql_geral():
         fornec = f"AND codfornec IN ({codigo_fornecedor_sql})"
     sql_geral = f"""
         SELECT
-            TO_CHAR(dtemissao, 'DD/MM/YYYY') AS dtemissao,
+            dtemissao,
             codfilial,
             numped,
             codfornec,
@@ -88,8 +88,8 @@ def gera_sql_geral():
             tipo_pedido,
             status_entrega,
             COALESCE(NULLIF(LISTAGG(NUMNOTA, ', ') WITHIN GROUP (ORDER BY NUMNOTA), ''), ' ') AS NOTAS_FISCAIS,
-            TO_CHAR(prev_entrega, 'DD/MM/YYYY') AS prev_ent,
-            COALESCE(NULLIF(TO_CHAR(dtfaturamento, 'DD/MM/YYYY'), ''), ' ') AS dtfat
+            TO_CHAR(prev_entrega, 'DD/MM/YYYY') AS prev_ent--,
+            --COALESCE(NULLIF(TO_CHAR(dtfaturamento, 'DD/MM/YYYY'), ''), ' ') AS dtfat
         FROM (
             SELECT
                 p.codfornec,
@@ -101,7 +101,7 @@ def gera_sql_geral():
                 p.codcomprador,
                 PN.NUMNOTA,
                 f.prazoentrega,
-                MIN (pn.dtmov) AS dtfaturamento,
+                --MIN (pn.dtmov) AS dtfaturamento,
                 MAX(CASE
                     WHEN ABS(p.vltotal - p.vlentregue) <= 0.1 THEN 'TOTAL'
                     WHEN p.vlentregue = 0 AND EXISTS (
@@ -127,14 +127,14 @@ def gera_sql_geral():
                 AND p.dtemissao BETWEEN TO_DATE('{data_inicial_sql}', 'DD-MON-YYYY') AND TO_DATE('{data_final_sql}', 'DD-MON-YYYY')
                 AND p.codcomprador IN ({codigo_comprador_sql})
             GROUP BY
-                p.codfornec, f.fornecedor, p.numped, p.dtemissao, p.vltotal, p.codfilial, p.codcomprador, PN.NUMNOTA, f.prazoentrega, pn.dtmov
+                p.codfornec, f.fornecedor, p.numped, p.dtemissao, p.vltotal, p.codfilial, p.codcomprador, PN.NUMNOTA, f.prazoentrega--, pn.dtmov
         ) subquery
         WHERE
             status_entrega IN ({resultado_status_sql})
             AND tipo_pedido IN ({resultado_tipo_sql})
             {fornec}
         GROUP BY
-            codfornec, fornecedor, numped, dtemissao, vltotal, codfilial, codcomprador, status_entrega, tipo_pedido, prev_entrega, dtfaturamento
+            codfornec, fornecedor, numped, dtemissao, vltotal, codfilial, codcomprador, status_entrega, tipo_pedido, prev_entrega--, dtfaturamento
         ORDER BY
             dtemissao"""
                     
