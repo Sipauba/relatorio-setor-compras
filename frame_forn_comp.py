@@ -29,6 +29,7 @@ def frame_forn_comp(root) :
     botao_comprador = Button(frame_forn_comp, text='...', width=1, height=1, bg='silver', command=lambda:toplevel_comprador(root))
     botao_comprador.grid(row=3, column=1, padx=(0,0), sticky='w')
     
+    return frame_forn_comp
     #return campo_fornecedor
     
 def atualiza_campo_fornecedor(campo_fornecedor,valor):

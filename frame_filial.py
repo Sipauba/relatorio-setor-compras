@@ -18,7 +18,7 @@ def frame_filial(root) :
     botao_filial = Button(frame_filial, text='...', width='1', height='1', bg='silver', command=lambda:toplevel_filial(root))
     botao_filial.grid(row=1, column=1, padx=(2,0), sticky='n')
    
-    
+    return frame_filial
     #return campo_filial
     
 def atualiza_campo_filial(campo_filial,valor):

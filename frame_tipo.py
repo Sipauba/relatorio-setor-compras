@@ -37,3 +37,5 @@ def frame_tipo(root):
     
     box_aguardando_entrega = Checkbutton(frame_tipo, text='BONIFICAÇÃO', variable=var_bonificacao, command=exibir_valores_tipo)
     box_aguardando_entrega.grid(row=2, column=0, sticky='w')
+
+    return frame_tipo

@@ -43,5 +43,7 @@ def treeview(root) :
     # Define a posição e as dimenções da TreeView
     tree.place(x = 40, y = 180, width = 910, height = 370)
     
+    return treeview
+    
     
 

@@ -43,6 +43,8 @@ def frame_status(root):
     
     box_total = Checkbutton(frame_status, text='ENTREGA TOTAL', variable=var_total, command=exibir_valores_status)
     box_total.grid(row=4, column=0, sticky='w')
+    
+    return frame_status
 
   
     

@@ -41,4 +41,5 @@ def frame_data(root):
     data_final.bind("<<DateEntrySelected>>", salvar_datas)  # Associa o evento à função
     #data_final.set_date(None)
     
+    return frame_data
     salvar_datas(None)
