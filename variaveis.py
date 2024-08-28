@@ -89,8 +89,8 @@ def gera_sql_geral():
             status_entrega,
             COALESCE(NULLIF(LISTAGG(NUMNOTA, ', ') WITHIN GROUP (ORDER BY NUMNOTA), ''), ' ') AS NOTAS_FISCAIS,
             TO_CHAR(prev_entrega, 'DD/MM/YYYY') AS prev_ent,
-            TRUNC(SYSDATE - dtemissao) AS dias
-            --COALESCE(NULLIF(TO_CHAR(dtfaturamento, 'DD/MM/YYYY'), ''), ' ') AS dtfat
+            TRUNC(SYSDATE - dtemissao) AS dias,
+            COALESCE(obs, ' ') AS obs
         FROM (
             SELECT
                 p.codfornec,
@@ -117,7 +117,8 @@ def gera_sql_geral():
                     WHEN p.tipobonific = 'B' THEN 'BONIFICADO'
                     WHEN p.tipobonific = 'N' THEN 'VENDA'
                 END) AS tipo_pedido,
-                (p.dtemissao + f.prazoentrega + 1) AS prev_entrega
+                (p.dtemissao + f.prazoentrega + 1) AS prev_entrega,
+                p.obs
             FROM
                 pcpedido p
                 LEFT JOIN pcfornec f ON p.codfornec = f.codfornec
@@ -128,14 +129,14 @@ def gera_sql_geral():
                 AND p.dtemissao BETWEEN TO_DATE('{data_inicial_sql}', 'DD-MON-YYYY') AND TO_DATE('{data_final_sql}', 'DD-MON-YYYY')
                 AND p.codcomprador IN ({codigo_comprador_sql})
             GROUP BY
-                p.codfornec, f.fornecedor, p.numped, p.dtemissao, p.vltotal, p.codfilial, p.codcomprador, PN.NUMNOTA, f.prazoentrega--, pn.dtmov
+                p.codfornec, f.fornecedor, p.numped, p.dtemissao, p.vltotal, p.codfilial, p.codcomprador, PN.NUMNOTA, f.prazoentrega, p.obs--, pn.dtmov
         ) subquery
         WHERE
             status_entrega IN ({resultado_status_sql})
             AND tipo_pedido IN ({resultado_tipo_sql})
             {fornec}
         GROUP BY
-            codfornec, fornecedor, numped, dtemissao, vltotal, codfilial, codcomprador, status_entrega, tipo_pedido, prev_entrega--, dtfaturamento
+            codfornec, fornecedor, numped, dtemissao, vltotal, codfilial, codcomprador, status_entrega, tipo_pedido, prev_entrega, obs--, dtfaturamento
         ORDER BY
             dtemissao"""
                     
