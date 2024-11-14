@@ -79,6 +79,7 @@ def gera_sql_geral():
     sql_geral = f"""
         SELECT
             dtemissao,
+            dtfatur,
             codfilial,
             numped,
             codfornec,
@@ -97,6 +98,7 @@ def gera_sql_geral():
                 f.fornecedor,
                 p.numped,
                 p.dtemissao,
+                p.dtfatur,
                 p.vltotal,
                 p.codfilial,
                 p.codcomprador,
@@ -129,14 +131,14 @@ def gera_sql_geral():
                 AND p.dtemissao BETWEEN TO_DATE('{data_inicial_sql}', 'DD-MON-YYYY') AND TO_DATE('{data_final_sql}', 'DD-MON-YYYY')
                 AND p.codcomprador IN ({codigo_comprador_sql})
             GROUP BY
-                p.codfornec, f.fornecedor, p.numped, p.dtemissao, p.vltotal, p.codfilial, p.codcomprador, PN.NUMNOTA, f.prazoentrega, p.obs--, pn.dtmov
+                p.codfornec, f.fornecedor, p.numped, p.dtemissao, p.dtfatur, p.vltotal, p.codfilial, p.codcomprador, PN.NUMNOTA, f.prazoentrega, p.obs--, pn.dtmov
         ) subquery
         WHERE
             status_entrega IN ({resultado_status_sql})
             AND tipo_pedido IN ({resultado_tipo_sql})
             {fornec}
         GROUP BY
-            codfornec, fornecedor, numped, dtemissao, vltotal, codfilial, codcomprador, status_entrega, tipo_pedido, prev_entrega, obs--, dtfaturamento
+            codfornec, fornecedor, numped, dtemissao, dtfatur, vltotal, codfilial, codcomprador, status_entrega, tipo_pedido, prev_entrega, obs--, dtfaturamento
         ORDER BY
             dtemissao"""
                     
